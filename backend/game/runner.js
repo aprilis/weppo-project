@@ -5,10 +5,16 @@ const uniqid = require('uniqid');
 const _ = require('underscore');
 const { EventEmitter } = require('events');
 
-const DATA_PATH = 'data/games';
+const dataPath = 'data/games';
+
+const defaultOptions = {
+    timeLimit: 1000,
+    messageTimeLimit: 10000,
+    seed: 0
+};
 
 function getDataDirectory() {
-    return path.join(DATA_PATH, uniqid());
+    return path.join(dataPath, uniqid());
 }
 
 function repeat(n, o) {
@@ -75,7 +81,7 @@ function runGamePromise(game, bots, options) {
             };
 
             const history = {
-                turns: [],
+                updates: [],
                 fails: [],
                 results: null,
                 initialInfo: {}
@@ -98,6 +104,9 @@ function runGamePromise(game, bots, options) {
                 playing.delete(bots[nr]);
                 if(bots[nr].process) {
                     bots[nr].process.kill('SIGKILL');
+                    if(game.process) {
+                        game.process.stdio[nr+3].destroy();
+                    }
                 }
             }
 
@@ -125,12 +134,12 @@ function runGamePromise(game, bots, options) {
 
             game.args.push(options.seed, bots.length);
             game.process = childProcess.spawn(game.command, game.args, {
-                stdio: ['ignore', 'ipc', process.stderr].concat(repeat(bots.length, 'pipe'))
+                stdio: ['ignore', 'ipc', process.stderr].concat(repeat(bots.length * 2, 'pipe'))
             });
 
             bots.forEach((b, i) => {
                 b.process = childProcess.spawn(b.command, b.args);
-                const input = game.process.stdio[i+3];
+                const input = game.process.stdio[2*i+3];
                 const output = b.process.stdout;
                 const stderr = fs.createWriteStream(object.errs[i]);
 
@@ -142,7 +151,7 @@ function runGamePromise(game, bots, options) {
                     endTurn(i);
                     stderr.write('END\n');
                 });
-                output.pipe(game.process.stdio[i+3], { end: false });
+                output.pipe(game.process.stdio[2*i+4], { end: false });
                 output.pipe(fs.createWriteStream(object.outputs[i]));
 
                 b.process.stderr.pipe(stderr);
@@ -173,8 +182,14 @@ function runGamePromise(game, bots, options) {
                         finished = true;
                         finish();
                         break;
-                    case 'next_turn':
-                        history.turns[currentTurn++] = m.description;
+                    case 'update':
+                        if(m.nextTurn) {
+                            currentTurn++;
+                        }
+                        history.updates.push({
+                            turn: currentTurn,
+                            description: m.description
+                        });
                         break;
                     case 'initial_info':
                         history.initialInfo = m.description;
@@ -208,10 +223,11 @@ function runGamePromise(game, bots, options) {
 }
 
 async function runGame(game, bots, options) {
+    if(!options) options = { };
     const directory = getDataDirectory();
     options.outputPath = directory;
     await fs.mkdirs(directory);
-    return await runGamePromise(game, bots, options);
+    return await runGamePromise(game, bots, Object.assign({}, defaultOptions, options));
 }
 
 module.exports = { runGame: runGame };
