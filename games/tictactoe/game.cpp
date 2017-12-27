@@ -98,8 +98,8 @@ int main(int argc, char *argv[]) {
     assert(argv[argc-1] == string("2"));
     FILE *inputs[2], *outputs[2];
     for(int i = 0; i < 2; i++) {
-        outputs[i] = fdopen(2 * i + 3, "w");
-        inputs[i] = fdopen(2 * i + 4, "r");
+        outputs[i] = fdopen(i + 3, "w");
+        inputs[i] = fdopen(i + 3, "r");
     }
     board b;
     while(true) {
@@ -115,9 +115,9 @@ int main(int argc, char *argv[]) {
             myAssert(inRange(x, 0, 2) && inRange(y, 0, 2),          p, "Values are not in range [0, 2]");
             myAssert(end == string("END"),                          p, "Missing END token");
             myAssert(b.set(x, y, p),                                p, "Selected field that was not empty");
+            update(b, p == 1);
             if(b.checkLine() == p)
                 finish(p);
-            update(b, p == 1);
         }
     }
 }

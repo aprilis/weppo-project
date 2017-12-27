@@ -134,12 +134,12 @@ function runGamePromise(game, bots, options) {
 
             game.args.push(options.seed, bots.length);
             game.process = childProcess.spawn(game.command, game.args, {
-                stdio: ['ignore', 'ipc', process.stderr].concat(repeat(bots.length * 2, 'pipe'))
+                stdio: ['ignore', 'ipc', process.stderr].concat(repeat(bots.length, 'pipe'))
             });
 
             bots.forEach((b, i) => {
                 b.process = childProcess.spawn(b.command, b.args);
-                const input = game.process.stdio[2*i+3];
+                const input = game.process.stdio[i+3];
                 const output = b.process.stdout;
                 const stderr = fs.createWriteStream(object.errs[i]);
 
@@ -151,7 +151,7 @@ function runGamePromise(game, bots, options) {
                     endTurn(i);
                     stderr.write('END\n');
                 });
-                output.pipe(game.process.stdio[2*i+4], { end: false });
+                output.pipe(game.process.stdio[i+3], { end: false });
                 output.pipe(fs.createWriteStream(object.outputs[i]));
 
                 b.process.stderr.pipe(stderr);
