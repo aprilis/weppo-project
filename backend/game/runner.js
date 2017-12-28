@@ -76,7 +76,8 @@ function runGamePromise(game, bots, options) {
                 results: null,
                 inputs: bots.map((_, i) => path.join(directory, 'input' + i)),
                 outputs: bots.map((_, i) => path.join(directory, 'output' + i)),
-                errs: bots.map((_, i) => path.join(directory, 'stderr' + i))
+                errs: bots.map((_, i) => path.join(directory, 'stderr' + i)),
+                history: historyPath
             };
 
             const history = {
