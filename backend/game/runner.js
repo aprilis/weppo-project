@@ -47,7 +47,6 @@ function runGamePromise(game, bots, options) {
                 if(o.process) {
                     o.process.kill('SIGKILL');
                 }
-                o.process = null;
                 if(o.timeout) {
                     clearTimeout(o.timeout);
                 }
@@ -77,7 +76,8 @@ function runGamePromise(game, bots, options) {
                 results: null,
                 inputs: bots.map((_, i) => path.join(directory, 'input' + i)),
                 outputs: bots.map((_, i) => path.join(directory, 'output' + i)),
-                errs: bots.map((_, i) => path.join(directory, 'stderr' + i))
+                errs: bots.map((_, i) => path.join(directory, 'stderr' + i)),
+                history: historyPath
             };
 
             const history = {
@@ -222,12 +222,18 @@ function runGamePromise(game, bots, options) {
     });
 }
 
+function copy(o) {
+    return Object.assign({}, o);
+}
+
 async function runGame(game, bots, options) {
-    if(!options) options = { };
+    game = copy(game);
+    bots = bots.map(copy);
+    options = Object.assign({}, defaultOptions, options);
     const directory = getDataDirectory();
     options.outputPath = directory;
     await fs.mkdirs(directory);
-    return await runGamePromise(game, bots, Object.assign({}, defaultOptions, options));
+    return await runGamePromise(game, bots, options);
 }
 
 module.exports = { runGame: runGame };
