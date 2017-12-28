@@ -1,14 +1,11 @@
-<html>
-    <body>
-        <html>
-            <body>
-                Witamy
-                <form method="POST" enctype="multipart/form-data">
-                    <input type="text" name="user"><br>
-                    <input type="hidden" name="_csrf" value="<%= token %>">
-                    <button type="submit">Zaloguj</button>
-                </form>
-            </body>
-        </html>
-    </body>
-</html>
+<% var title = 'BotPlatform' %>
+<% include head.ejs %>
+<% include alert.ejs %>
+
+<h1>
+    Welcome to BotPlatform
+    <a href="/signup">Sign up</a>
+    <a href="/login">Log in</a>
+</h1>
+
+<% include foot.ejs %>

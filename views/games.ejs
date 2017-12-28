@@ -1,11 +1,27 @@
-<html>
-    <body>
-        Witaj <%= user %><br>
-        <a href="/logout">Wyloguj</a>
+<% var title = 'Games arena' %>
+<% include head.ejs %>
+<% include alert.ejs %>
 
-        <a>
-            Gry:
-            <a href="/games/crossncircle">Cross and Circle</a>
-        </a>
-    </body>
-</html>
+<% var userName = user.userName %>
+<% include userPartial.ejs %>
+
+<header>
+    <h1 class="text-center"> Welcome <%= user.userName %>!</h1>
+</header>
+    <h2>
+        Please, choose game you want to compete in:
+    </h2>
+
+    <div class="row">
+        <div class="col col-sm-4 col-md-6 col-lg-6"><strong>TicTacToe</strong></div>
+        <div class="col col-sm-8 col-md-6 col-lg-6"> Get in</div>
+    </div>
+    <div class="row">
+        <div class="col col-sm-4 col-md-6 col-lg-6"><strong>Game #2</strong></div>
+        <div class="col col-sm-8 col-md-6 col-lg-6"> Get in</div>
+    </div>
+    <div class="row">
+        <div class="col col-sm-4 col-md-6 col-lg-6"><strong>Game #3</strong></div>
+        <div class="col col-sm-8 col-md-6 col-lg-6"> Get in</div>
+    </div>
+<% include foot.ejs %>
