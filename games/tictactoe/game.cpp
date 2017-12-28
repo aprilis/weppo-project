@@ -71,7 +71,7 @@ void update(const board &b, bool nextTurn) {
 void finish(int winner) {
     sendJson({
         {"type", "finished"},
-        {"results", { winner, 1 - winner }}
+        {"results", { winner == 0 ? 1 : 2, winner == 1 ? 1 : 2 }}
     });
     exit(0);
 }
