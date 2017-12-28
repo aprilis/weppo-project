@@ -1,0 +1,91 @@
+<head>
+    <title>TicTacToe</title>
+    <style>
+    * {
+       margin: 0;
+       padding: 0;
+       box-sizing: border-box;
+       margin-left: 50px;
+       width: 200px;
+    }
+
+    body {
+       font: 13px Helvetica, Arial;
+       width: 200px;
+    }
+
+    form {
+       background: grey;
+       padding: 5px;
+       position: fixed;
+       bottom: 0;
+       width: 50%;
+    }
+
+    form input {
+       border: 0;
+       padding: 10px;
+       width: 90%;
+       margin-right: .5%;
+    }
+
+    form button {
+       width: 100px;
+       background: red;
+       font-size: 12px;
+       border: none;
+       padding: 10px 0;
+    }
+
+    #messages {
+       list-style-type: none;
+       margin: 0;
+       padding: 0;
+    }
+
+    #messages li {
+       padding: 10px 12px;
+       font-size: 14px;
+    }
+
+    #messages li:last-child {
+       margin-bottom: 43px;
+    }
+
+    #messages li:nth-child(odd) {
+       background: #ddd;
+    }
+
+    #messages li:nth-child(even) {
+       background: #bbb;
+    }
+    </style>
+</head>
+
+<body>
+    <ul id="messages"></ul>
+    <form action="">
+        <input id="msg" autocomplete="off" /><button>Send</button>
+    </form>
+
+    <div name="name" value=<%= user.userName %>></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        $('form').submit(function() {
+            var name = document.getElementsByName('name')[0].value;
+            var message = $('#msg').val();
+            socket.emit('message', name + message);
+            $('#msg').val('');
+            return false;
+        });
+
+        socket.on('message', function(msg) {
+            $('#messages').append($('<li>').text(msg));
+            $("html, body").scrollTop($(document).height());
+        });
+    </script>
+</body>
