@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <style>
+            #arena {
+                width: 600px;
+                height: 400px;
+            }
+            #loading {
+                line-height: 400px;
+                text-align: center;
+            }
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <div id="arena">
+            <div id="loading">
+                Ładowanie...
+            </div>
+            <div id="animation">
+                <canvas id="canvas" width="600px" height="400px" style="border:1px solid #000000;"/>
+            </div>
+        </div>
+        <script>
+            function drawAnimation(canvas, history) {
+                //TODO
+            }
+
+            $('#animation').hide();
+            fetch('/testing/run-tictactoe')
+                .then(response => response.json())
+                .then(response => {
+                    console.log(response);
+                    $('#loading').hide();
+                    $('#animation').show();
+                    drawAnimation(canvas, history);
+                });
+        </script>
+    </body>
+</html>
