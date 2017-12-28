@@ -68,10 +68,10 @@ void update(const board &b, bool nextTurn) {
     });
 }
 
-void finish(int winner) {
+void finish(int loser) {
     sendJson({
         {"type", "finished"},
-        {"results", { winner == 0 ? 1 : 2, winner == 1 ? 1 : 2 }}
+        {"results", { loser != 0 ? 1 : 2, loser != 1 ? 1 : 2 }}
     });
     exit(0);
 }
@@ -82,7 +82,7 @@ void playerFailed(int nr, string reason) {
         {"player", nr},
         {"reason", reason}
     });
-    finish(1 - nr);
+    finish(nr);
 }
 
 void myAssert(bool condition, int nr, string message) {
@@ -102,6 +102,7 @@ int main(int argc, char *argv[]) {
         inputs[i] = fdopen(i + 3, "r");
     }
     board b;
+    int moves = 0;
     while(true) {
         for(int p = 0; p < 2; p++) {
             b.write(outputs[p]);
@@ -117,7 +118,9 @@ int main(int argc, char *argv[]) {
             myAssert(b.set(x, y, p),                                p, "Selected field that was not empty");
             update(b, p == 1);
             if(b.checkLine() == p)
-                finish(p);
+                finish(1 - p);
+            if(++moves == 9)
+                finish(-1);
         }
     }
 }

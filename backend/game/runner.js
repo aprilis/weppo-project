@@ -14,7 +14,7 @@ const defaultOptions = {
 };
 
 function getDataDirectory() {
-    return path.join(dataPath, uniqid());
+    return path.resolve(dataPath, uniqid());
 }
 
 function repeat(n, o) {
