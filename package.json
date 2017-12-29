@@ -22,11 +22,8 @@
     "passport-local": "^1.0.0",
     "passport-localapikey": "0.0.3",
     "serve-favicon": "~2.2.0",
-<<<<<<< HEAD
-    "socket.io": "^2.0.4"
-=======
+    "socket.io": "^2.0.4",
     "underscore": "^1.8.3",
     "uniqid": "^4.1.1"
->>>>>>> 20f8078f831f4011fdced423035ec178e6f00db2
   }
 }
