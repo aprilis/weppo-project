@@ -37,6 +37,10 @@
        padding: 10px 0;
     }
 
+    #usersForm {
+        width: 200px;
+    }
+
     #messages {
        list-style-type: none;
        margin: 0;
@@ -63,20 +67,52 @@
 </head>
 
 <body>
+    <ul id="usersForm"></ul>
     <ul id="messages"></ul>
+
     <form action="">
         <input id="msg" autocomplete="off" /><button>Send</button>
     </form>
 
-    <div name="name" value=<%= user.userName %>></div>
+    <div id="name" value=<%= user.userName %>></div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        var socket = io();
+        var form = $('#form');
+        var messages = $('#messages');
+        var usersForm = $('#usersForm');
+
+        var socket = io.connect();
+
+        socket.on('connect', function() { 
+            console.log('connected');
+            socket.emit('authentication', 
+            { 
+                userName: 'myName',
+                password: 'test'
+            });
+        });
+
+        socket.on('authentication', function(result) {
+            if (result) {
+                alert('Great! You got authenticated.');
+            }
+            else {
+                alert("Something went wrong. You are not authenticated.");
+            }
+        });
+
+        socket.on('updateUserNames', function(userNames) {
+            usersForm.empty();
+
+            userNames.forEach(userName => {
+                usersForm.append($('<li>').text(userName));
+            });
+        });
 
         $('form').submit(function() {
-            var name = document.getElementsByName('name')[0].value;
+            var name = $('name').value;
             var message = $('#msg').val();
             socket.emit('message', name + message);
             $('#msg').val('');
@@ -84,7 +120,7 @@
         });
 
         socket.on('message', function(msg) {
-            $('#messages').append($('<li>').text(msg));
+            messages.append($('<li>').text(msg));
             $("html, body").scrollTop($(document).height());
         });
     </script>

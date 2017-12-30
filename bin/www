@@ -27,14 +27,175 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 // Socket connection
+//var sessionStore = new redisStore();
+
+
+// io.use(passportSocketIo.authorize({
+//   key: 'connect.sid',
+//   secret: process.env.SECRET_KEY_BASE,
+//   cookie: { maxAge: 60000, secure: false },
+//   //store: sessionStore,
+//   //passport: passport,
+//   cookieParser: cookieParser
+// }));
+//
+var passportSocketIo = require('passport.socketio');
 var io = require('socket.io').listen(server);
+
+// var bundle = require('socket.io-bundle');
+// var ioPassport = require('socket.io-passport');
+
+// io.use(bundle.cookieParser());
+// io.use(bundle.session({
+//   secret: 'secret',
+//   store: require('../app').sessionStore,
+// }));
+// io.use(ioPassport.initialize());
+// io.use(ioPassport.session());
+
+//session = require('express-session')
+//var sessionStore = new session.MemoryStore;
+session = require('express-session')
+var RedisStore = require('connect-redis')(session);
+var redisStore = new RedisStore();
+
+// io.use(passportSocketIo.authorize({
+//     key: 'connect.sid',
+//     secret: 'secret',
+//     store: require('../app').redisStore,
+//     //cookie: { maxAge: 60000, secure: false },
+//     //passport: require('../app').passport,
+//     cookieParser: require('../app').cookieParser,
+
+//     success:      onAuthorizeSuccess,  // *optional* callback on success - read more below
+//     fail:         onAuthorizeFail,     // *optional* callback on fail/error - read more below
+
+//   }));
+
+//   function onAuthorizeSuccess(data, accept){
+//     console.log('successful connection to socket.io');
+  
+//     // The accept-callback still allows us to decide whether to
+//     // accept the connection or not.
+//     accept(null, true);
+  
+//     // OR
+  
+//     // If you use socket.io@1.X the callback looks different
+//     accept();
+//   }
+  
+//   function onAuthorizeFail(data, message, error, accept){
+//     if(error)
+//       throw new Error(message);
+//     console.log('failed connection to socket.io:', message);
+  
+//     // We use this callback to log all of our failed connections.
+//     accept(null, false);
+  
+//     // OR
+  
+//     // If you use socket.io@1.X the callback looks different
+//     // If you don't want to accept the connection
+//     if(error)
+//       accept(new Error(message));
+//     // this error will be sent to the user as a special error-package
+//     // see: http://socket.io/docs/client-api/#socket > error-object
+//     }
+var clientSockets = [];
+
+// TODO: Implementation
+function authenticateUser(authenticationData){
+  var userName = authenticationData.userName;
+
+  clientSockets.forEach(clientSocket => {
+    if(clientSocket.userName == userName)
+      return false;
+  });
+
+  // passport authentication here
+  
+
+  return true;
+}
+
+var cookie = require('cookie');
+var signature = require('cookie-signature');
+var secret = 'secret';
 
 io.sockets.on('connection', function(socket){
   console.log('Socket Connected...');
 
+  // Authenticate
+  socket.on('authentication', function(authenticationData) {
+    // if (socket.request.user && socket.request.user.logged_in) {
+    //   console.log(socket.request.user);
+    // }
+
+    // console.log(socket.request.user);
+    // console.log(socket.request.userName);
+
+    if (socket.handshake && socket.handshake.headers && socket.handshake.headers.cookie) {
+      var raw = cookie.parse(socket.handshake.headers.cookie)['connect.sid'];
+      if (raw) {
+          socket.sessionId = signature.unsign(raw.slice(2), secret);
+      }
+    }
+    if (socket.sessionId) {
+        var store = require('../app').sessionStore;
+        store.get(socket.sessionId, function(err, session) {
+            if (session) { // ERROR HERE
+                // here we should be able to access:
+                // session.passport.user.userName and other properties!
+                console.log(session.passport.user);
+            }
+        });
+    }
+
+    if (authenticateUser(authenticationData)) {
+      var clientSocket = {
+        socket: socket,
+        userName: authenticationData.userName
+      }
+
+      clientSockets.push(clientSocket);
+      socket.emit('authentication', true);
+      updateUserNames();
+    }
+    else{
+      socket.emit('authentication', false);
+      socket.disconnect(true);
+    }
+  })
+
+  // Update user names
+  function updateUserNames() {
+    var userNames = [];
+    clientSockets.forEach(clientSocket => {
+      userNames.push(clientSocket.userName)
+    });
+
+    clientSockets.forEach(clientSocket => {
+      clientSocket.socket.emit('updateUserNames', userNames);
+    });
+  }
+
   // Send message
   socket.on('message', function(msg){
-    io.sockets.emit('message', msg);
+    clientSockets.forEach(clientSocket => {
+      clientSocket.socket.emit('message', msg);
+    });
+  })
+
+  // Disconnection
+  socket.on('disconnect', function(data){
+    for(var i = 0; i < clientSockets.length; i++) {
+      if (clientSockets[i].socket == socket) {
+        clientSockets.splice(i, 1);
+        updateUserNames();
+        break;
+      }
+    }
   })
 })
 

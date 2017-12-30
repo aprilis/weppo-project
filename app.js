@@ -7,8 +7,13 @@ var express = require('express')
     , favicon = require('serve-favicon')
     , logger = require('morgan')
     , passport = require('./config/passport.js')
-    , mongo = require('./config/mongo.js');
+    , mongo = require('./config/mongo.js')
 
+// Sets up a session store with Redis
+var RedisStore = require('connect-redis')(session);
+//var redis = require("redis").createClient();
+//var sessionStore = new RedisStore;//({client: redis});
+var sessionStore = new session.MemoryStore();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,9 +26,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({
+    key: 'connect.sid',
+    store: sessionStore,
     secret: 'secret',
-    cookie: { maxAge: 60000, secure: false },
-    resave: true,
+    //cookie: { maxAge: 60000, secure: false },
+    resave: false,
     saveUninitialized: false
 }));
 
