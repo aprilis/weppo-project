@@ -14,6 +14,7 @@ var RedisStore = require('connect-redis')(session);
 //var redis = require("redis").createClient();
 //var sessionStore = new RedisStore;//({client: redis});
 var sessionStore = new session.MemoryStore();
+app.sessionStore = sessionStore;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
