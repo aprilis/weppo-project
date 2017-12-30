@@ -143,8 +143,8 @@ io.sockets.on('connection', function(socket){
     }
     if (socket.sessionId) {
         var store = require('../app').sessionStore;
-        store.get(socket.sessionId, function(err, session) {
-            if (session) { // ERROR HERE
+        store.get(socket.sessionId, function(err, session) { // ERROR HERE!!!
+            if (session) { 
                 // here we should be able to access:
                 // session.passport.user.userName and other properties!
                 console.log(session.passport.user);
