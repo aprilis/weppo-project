@@ -8,13 +8,13 @@ var express = require('express')
     , logger = require('morgan')
     , passport = require('./config/passport.js')
     , mongo = require('./config/mongo.js')
+    , settings = require('./config/settings.js')
 
-// Sets up a session store with Redis
-var RedisStore = require('connect-redis')(session);
-//var redis = require("redis").createClient();
-//var sessionStore = new RedisStore;//({client: redis});
 var sessionStore = new session.MemoryStore();
+
+// Export some variables so that they are shared across files.
 app.sessionStore = sessionStore;
+app.cookieParser = cookieParser;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -29,7 +29,7 @@ app.use(cookieParser());
 app.use(session({
     key: 'connect.sid',
     store: sessionStore,
-    secret: 'secret',
+    secret: settings.secret,
     //cookie: { maxAge: 60000, secure: false },
     resave: false,
     saveUninitialized: false

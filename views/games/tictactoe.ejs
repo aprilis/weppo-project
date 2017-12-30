@@ -74,8 +74,6 @@
         <input id="msg" autocomplete="off" /><button>Send</button>
     </form>
 
-    <div id="name" value=<%= user.userName %>></div>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -87,11 +85,7 @@
 
         socket.on('connect', function() { 
             console.log('connected');
-            socket.emit('authentication', 
-            { 
-                userName: 'myName',
-                password: 'test'
-            });
+            socket.emit('authentication', null);
         });
 
         socket.on('authentication', function(result) {
@@ -112,15 +106,16 @@
         });
 
         $('form').submit(function() {
-            var name = $('name').value;
             var message = $('#msg').val();
-            socket.emit('message', name + message);
+            socket.emit('message', message);
             $('#msg').val('');
             return false;
         });
 
-        socket.on('message', function(msg) {
-            messages.append($('<li>').text(msg));
+        socket.on('message', function(data) {
+            var user = data.user;
+            var message = data.message;
+            messages.append($('<li>').text(user + ": " + message));
             $("html, body").scrollTop($(document).height());
         });
     </script>
