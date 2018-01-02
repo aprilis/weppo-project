@@ -64,7 +64,6 @@ function buildPromise( Sub, options ) {
                     failure(message);
                 }
                 else {
-                    console.log("HURA");
                     success(object);
                 }         
             }
@@ -98,12 +97,9 @@ function buildPromise( Sub, options ) {
     });
 }
 
-
 function copy(o) {
     return Object.assign({}, o);
 }
-
-
 
 async function build( Sub, options ) {
     Sub = copy(Sub);
