@@ -38,19 +38,32 @@ function buildPromise( Sub, options ) {
 
         function success(...args) {
             if(returned) return;
+            console.log("SUCCESS");
             returned = true;
             res(...args);
         }
     
         function failure(...args) {
             if(returned) return;
+            console.log("FAILURE");
             returned = true;
             rej(...args);        
         }
 
+        function codeExtension(Sub) {
+            switch(Sub.language) {
+                case 'cpp':
+                    return 'code.cpp';
+                    break;
+                case 'none':
+                    return 'code';
+                    break;
+            }
+        }
+
 
         try {
-            const codePath = path.join(options.dataDirectory, 'code.cpp');
+            const codePath = path.join(options.dataDirectory, codeExtension(Sub));
             const execPath = path.join(options.dataDirectory, 'executable');
 
             const object = {
