@@ -1,7 +1,6 @@
 const uniqid = require('uniqid');
 const path = require('path');
-const fs_extra = require('fs-extra');
-const fs = require('fs');
+const fs = require('fs-extra');
 const childProcess = require('child_process');
 
 const dataPath = 'data/builds';
@@ -16,6 +15,7 @@ const defaultOptions = {
  {
      type : game/bot
      code : string
+     codePath : string (optional)
      username : string
      gamename : string
      language : string
@@ -78,7 +78,7 @@ function buildPromise( Sub, options ) {
                 }
                 else {
                     success(object);
-                }         
+                }
             }
 
             function buildCPP(Sub) {
@@ -87,7 +87,12 @@ function buildPromise( Sub, options ) {
                 Sub.process = childProcess.exec(buildCommand, onExecFinish);
             }
 
-            fs.writeFileSync(codePath, Sub.code);
+            if(Sub.codePath) {
+                fs.copySync(Sub.codePath, codePath);
+            } else {
+                fs.writeFileSync(codePath, Sub.code);
+            }
+            
 
             switch(Sub.language) {
                 case 'cpp':
@@ -119,7 +124,7 @@ async function build( Sub, options ) {
     options = Object.assign({}, defaultOptions, options);
     const directory = getDataDirectory(Sub);
     options.dataDirectory = directory;
-    await fs_extra.mkdirs(directory);
+    await fs.mkdirs(directory);
     return buildPromise(Sub, options)
 }
 
