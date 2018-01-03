@@ -1,8 +1,11 @@
 // Here will be routed all pages used for internal website testing
 
 const express = require('express');
+const multer = require('multer');
 const { runGame } = require('../backend/game/runner');
+const { build } = require('../backend/game/builder');
 const router = express.Router();
+const upload = multer({ dest: 'data/code' });
 
 router.get('/', (req, res) => {
     res.render('testing/index');
@@ -10,6 +13,10 @@ router.get('/', (req, res) => {
 
 router.get('/tictactoe', (req, res) => {
     res.render('testing/tictactoe');
+});
+
+router.get('/tictactoe-code', (req, res) => {
+    res.render('testing/tictactoe-code');
 });
 
 router.get('/run-tictactoe', (req, res) => {
@@ -27,5 +34,31 @@ router.get('/run-tictactoe', (req, res) => {
         res.sendFile(result.history);
     }).catch(console.error);
 })
+
+function buildCode(code) {
+    return build({
+        type: 'bot',
+        codePath: code,
+        username: 'mareklazniak',
+        gamename: 'tictactoe',
+        language: 'cpp'
+    });
+}
+
+async function letThemFight(code1, code2) {
+    const bots = await Promise.all([buildCode(code1), buildCode(code2)]);
+    const game = {
+        command: 'games/tictactoe/game',
+        args: []
+    };
+    return await runGame(game, bots);
+}
+
+router.post('/run-tictactoe-code', upload.fields([{name: 'code1', maxCount: 1},
+    {name: 'code2', maxCount: 1}]), (req, res) => {
+    letThemFight(req.files.code1[0].path, req.files.code2[0].path).then((result) => {
+        res.sendFile(result.history)
+    }).catch(console.error);
+});
 
 module.exports = router;

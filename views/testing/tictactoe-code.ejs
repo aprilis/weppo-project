@@ -1,0 +1,109 @@
+<html>
+    <head>
+        <style>
+            #arena {
+                width: 600px;
+                height: 400px;
+            }
+            #loading {
+                line-height: 400px;
+                text-align: center;
+            }
+            textarea {
+                min-width: 300px;
+                min-height: 300px;
+                margin: 20px;
+            }
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <form id="send-code" method="post" enctype="multipart/form-data">
+            <div style="display: flex;">
+                <div>
+                    <textarea form="send-code" name="code1-text" 
+                        placeholder="C++ code of the first bot" wrap="soft"></textarea><br>
+                    <input name="code1-file" type="file"><br>
+                </div>
+                <div>
+                    <textarea form="send-code" name="code2-text" 
+                        placeholder="C++ code of the second bot" wrap="soft"/></textarea><br>
+                    <input name="code2-file" type="file"><br>
+                </div>
+            </div>
+            <br>
+            <input type="submit" value="Fight!">
+        </form>
+        <div id="arena">
+            <div id="loading">
+                Ładowanie...
+            </div>
+            <div id="animation">
+                <canvas id="canvas" width="600px" height="400px" style="border:1px solid #000000;"/>
+            </div>
+        </div>
+        <script>
+            $('#animation').hide();
+            $('#arena').hide();
+            $('#send-code').on('submit', e => {
+                $('#arena').show();
+                $('#send-code').hide();
+                e.preventDefault();
+                var data = new FormData();
+                for(var id of ['code1', 'code2']) {
+                    var codeFile = $('#send-code :input[name="' + id + '-file"]')[0];
+                    var codeText = $('#send-code :input[name="' + id + '-text"]')[0];
+                    if(codeFile.files[0]) {
+                        data.append(id, codeFile.files[0]);
+                    } else {
+                        data.append(id, new Blob([codeText.value]));
+                    }
+                }
+                fetch('/testing/run-tictactoe-code', {
+                    method: 'post',
+                    body: data
+                })  .then(response => response.json())
+                    .then(response => {
+                        console.log(response);
+                        $('#loading').hide();
+                        $('#animation').show();
+                        drawAnimation(canvas, response);
+                    })
+                    .catch(console.error);
+            });
+
+            function drawAnimation(canvas, history) {
+                var foo = (function () {
+                    var pos = 0;
+                    
+                    function sign(nr) {
+                        if (nr == -1) return "";
+                        if (nr == 0) return "O";
+                        if (nr == 1) return "X";
+                    }
+
+                    function draw () {
+                        if (pos == history.updates.length) pos--;
+
+                        var ctx = canvas.getContext("2d");
+
+                        ctx.fillStyle = "red";
+                        ctx.fillRect(0,0,300,300);
+                        ctx.fillStyle = "black";
+                        ctx.font = "100px Arial";
+                        for (var i =0; i<3; i++) {
+                            for (var j=0; j<3; j++) {
+                                ctx.fillText(sign(history.updates[pos].description.board[i][j]), j*100, (i+1)*100);
+                            }
+                        }
+                        pos++;
+                    }
+
+                    return draw;
+                })();
+
+                setInterval(foo, 1000);
+            }
+        </script>
+    </body>
+</html>
