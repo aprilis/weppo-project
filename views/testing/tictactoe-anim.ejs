@@ -15,7 +15,7 @@
                 margin: 20px;
             }
         </style>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>        
     </head>
     <body>
         <form id="send-code" method="post" enctype="multipart/form-data">
@@ -42,31 +42,11 @@
                 <canvas id="canvas" width="600px" height="400px" style="border:1px solid #000000;"/>
             </div>
         </div>
-        <script> 
-            var animationData = {
-                speed : 1000,
-                maxSpeed : 100000
-            }
-
-            function getCanvas() {
-                return document.getElementById('canvas').getContext("2d");
-            }
-
-            function getCanvasWidth() {
-                return 600;
-            }       
-
-            function getCanvasHeight() {
-                return 300;
-            }
-
-            function setAnimationSpeed(s) {
-                if (s>0 && s < maxSpeed) aniamtionData.speed = s;
-            }
-        </script>
+        <script src="/API/AnimationAPI.js"> </script>
+        <script src="/API/Animation.js"></script>
         <script> 
             function initAnimation() {
-
+                setAnimationSpeed(2000);
             }
 
             function sign(nr) {
@@ -118,23 +98,6 @@
                     })
                     .catch(console.error);
             });
-
-            function drawAnimation(canvas, history) {
-                initAnimation();
-                var drawer = (function () {
-                    var pos = 0;
-
-                    function draw () {
-                        if (pos == history.updates.length) pos--;
-                        drawFrame(history.updates[pos]);
-                        pos++;
-                    }
-
-                    return draw;
-                })();
-
-                setInterval(drawer, animationData.speed);
-            }
         </script>
     </body>
 </html>
