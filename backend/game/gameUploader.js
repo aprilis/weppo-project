@@ -22,6 +22,7 @@ const { repeat, copy } = require('../util/misc');
         command : 
         args :
         script : 
+        owner : 
     }
 */
 
@@ -49,12 +50,17 @@ async function buildGame(Sub) {
         language: Sub.language
     });
     game.scriptPath = path.join(getScriptDirectory(Sub), 'script.js');
+    game.owner = Sub.username;
     return game;
 }
 
+function gameExists (Sub) {
+    return false;
+}
 
 async function uploadGame(Sub, options) {
     Sub = copy(Sub);
+    if (gameExists(Sub)) throw(new Error("game of the given name already exists"));
     options = Object.assign({}, defaultOptions, options);    
     const codeDirectory = getCodeDirectory(Sub);
     const scriptDirectory = getScriptDirectory(Sub);
