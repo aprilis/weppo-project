@@ -98,8 +98,8 @@ int main(int argc, char *argv[]) {
     assert(argv[argc-1] == string("2"));
     FILE *inputs[2], *outputs[2];
     for(int i = 0; i < 2; i++) {
-        outputs[i] = fdopen(i + 3, "w");
-        inputs[i] = fdopen(i + 3, "r");
+        outputs[i] = fdopen(2 * i + 3, "w");
+        inputs[i] = fdopen(2 * i + 1 + 3, "r");
     }
     board b;
     int moves = 0;
@@ -108,14 +108,15 @@ int main(int argc, char *argv[]) {
             b.write(outputs[p]);
             fprintf(outputs[p], "END\n");
             fflush(outputs[p]);
-
             int x, y;
             char end[5];
+            cerr << "reading" << endl;
             myAssert(fscanf(inputs[p], "%d %d", &x, &y) == 2,      p, "Invalid output1");
             myAssert(fscanf(inputs[p], "%4s", end) == 1,            p, "Invalid output2");
             myAssert(inRange(x, 0, 2) && inRange(y, 0, 2),          p, "Values are not in range [0, 2]");
             myAssert(end == string("END"),                          p, "Missing END token");
             myAssert(b.set(x, y, p),                                p, "Selected field that was not empty");
+            cerr << "finished" << endl;
             update(b, p == 1);
             if(b.checkLine() == p)
                 finish(1 - p);

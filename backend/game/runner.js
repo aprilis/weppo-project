@@ -4,6 +4,8 @@ const path = require('path');
 const uniqid = require('uniqid');
 const _ = require('underscore');
 const { EventEmitter } = require('events');
+const { repeat, copy } = require('../util/misc');
+const promiseUtil = require('../util/promise');
 
 const dataPath = 'data/games';
 
@@ -17,223 +19,199 @@ function getDataDirectory() {
     return path.resolve(dataPath, uniqid());
 }
 
-function repeat(n, o) {
-    return new Array(n).fill(o);
-}
-
-function specialLineEmitter(stream, line) {
-    const emitter = new EventEmitter();
-    var buffer = '';
-    stream.on('data', (chunk) => {
-        buffer += chunk.toString('utf8');
-        const parts = buffer.split('\n');
-        parts.slice(0, -1).forEach(p => {
-            if(p == line) {
-                emitter.emit('line');
-            }
-        });
-        buffer = _.last(parts);
-    });
-    return emitter;
-}
-
-function runGamePromise(game, bots, options) {
-    
-    return new Promise((res, rej) => {
-        var returned = false;
-
-        function clean() {
-            bots.concat(game).forEach(o => {
-                if(o.process) {
-                    o.process.kill('SIGKILL');
-                }
-                if(o.timeout) {
-                    clearTimeout(o.timeout);
-                }
-                o.timeout = null;
-            });
-        }
-
-        function success(...args) {
-            if(returned) return;
-            returned = true;
-            clean();
-            res(...args);
-        }
-    
-        function failure(...args) {
-            if(returned) return;
-            returned = true;
-            clean();
-            rej(...args);        
-        }
-
+async function monitorBotTimeout(bot, timeout, result) {
+    const inputReader = promiseUtil.lineReader(bot.input),
+          outputReader = promiseUtil.lineReader(bot.output);
+    while(true) {
         try {
-            const directory = options.outputPath;
-            const historyPath = path.join(directory, 'history.json');
-
-            const object = {
-                results: null,
-                inputs: bots.map((_, i) => path.join(directory, 'input' + i)),
-                outputs: bots.map((_, i) => path.join(directory, 'output' + i)),
-                errs: bots.map((_, i) => path.join(directory, 'stderr' + i)),
-                history: historyPath
-            };
-
-            const history = {
-                updates: [],
-                fails: [],
-                results: null,
-                initialInfo: {}
-            };
-
-            var finished = false;
-            const playing = new Set(bots);
-            var currentTurn = 0;
-
-            function playerFailed(nr, reason) {
-                if(bots[nr].finished) {
-                    return;
-                }
-                bots[nr].finished = true;
-                history.fails.push({
-                    player: nr,
-                    reason: reason,
-                    turn: currentTurn
-                });
-                playing.delete(bots[nr]);
-                if(bots[nr].process) {
-                    bots[nr].process.kill('SIGKILL');
-                    if(game.process) {
-                        game.process.stdio[nr+3].destroy();
-                    }
-                }
-            }
-
-            function finish() {
-                fs.writeJson(historyPath, history, err => {
-                    if(err) {
-                        failure(err);
-                    } else {
-                        success(object);
-                    }
-                });
-            }
-
-            function beginTurn(nr) {
-                bots[nr].timeout = setTimeout(_.partial(playerFailed, nr,
-                    "Bot hasn't provided required output within the time limit"), options.timeLimit);
-            }
-
-            function endTurn(nr) {
-                if(bots[nr].timeout) {
-                    clearTimeout(bots[nr].timeout);
-                    bots[nr].timeout = null;
-                }
-            }
-
-            game.args.push(options.seed, bots.length);
-            game.process = childProcess.spawn(game.command, game.args, {
-                stdio: ['ignore', 'ipc', process.stderr].concat(repeat(bots.length, 'pipe'))
-            });
-
-            bots.forEach((b, i) => {
-                b.process = childProcess.spawn(b.command, b.args);
-                const input = game.process.stdio[i+3];
-                const output = b.process.stdout;
-                const stderr = fs.createWriteStream(object.errs[i]);
-
-                specialLineEmitter(input, 'END').on('line', () => beginTurn(i));
-                input.pipe(b.process.stdin, { end: false });
-                input.pipe(fs.createWriteStream(object.inputs[i]));
-
-                specialLineEmitter(output, 'END').on('line', () => {
-                    endTurn(i);
-                    stderr.write('END\n');
-                });
-                output.pipe(game.process.stdio[i+3], { end: false });
-                output.pipe(fs.createWriteStream(object.outputs[i]));
-
-                b.process.stderr.pipe(stderr);
-
-                b.process.on('exit', (code, signal) => {
-                    b.process = null;
-                    if(!finished && code != 0) {
-                        const message = signal ? 'Process terminated by signal ' + signal :
-                            'Process exited with code ' + code;
-                        playerFailed(i, message);
-                    }
-                });
-            });
-
-            game.process.on('message', m => {
-                if(game.timeout) {
-                    clearTimeout(game.timeout);
-                    game.timeout = setTimeout(() => {
-                        failure(new Error("Game hasn't sent any message within required timeout"));
-                    }, options.messageTimeLimit);
-                }
-                switch(m.type) {
-                    case 'player_failed':
-                        playerFailed(m.player, m.reason);
-                        break;
-                    case 'finished':
-                        object.results = history.results = m.results;
-                        finished = true;
-                        finish();
-                        break;
-                    case 'update':
-                        if(m.nextTurn) {
-                            currentTurn++;
-                        }
-                        history.updates.push({
-                            turn: currentTurn,
-                            description: m.description
-                        });
-                        break;
-                    case 'initial_info':
-                        history.initialInfo = m.description;
-                        break;
-                    case 'keep_alive':
-                        break;
-                }
-            });
-            game.timeout = setTimeout(() => {
-                failure(new Error("Game hasn't sent any message within required timeout"));
-            }, options.messageTimeLimit);
-
-            game.process.on('exit', (code, signal) => {
-                game.process = null;
-                if(code == 0) {
-                    setTimeout(() => {
-                        if(!finished) {
-                            failure(new Error("Game process hasn't sent message 'finished'"));
-                        }
-                    }, 1000);
-                } else {
-                    const message = signal ? 'Process terminated by signal ' + signal :
-                        'Process exited with code ' + code;
-                    failure(new Error(message));
-                }
-            });
+            await promiseUtil.specialLine(inputReader, 'END');
         } catch(e) {
-            failure(e);
+            return result;
         }
-    });
-}
-
-function copy(o) {
-    return Object.assign({}, o);
+        var res;
+        try {
+            res = await promiseUtil.runWithTimeout(
+                promiseUtil.specialLine(outputReader, 'END'), timeout, 'timeout');
+        } catch(e) {
+            throw {
+                object: bot,
+                result, result,
+                error: 'Bot has terminated unexpectedly'
+            }
+        }
+        if(res == 'timeout') {
+            throw {
+                object: bot,
+                result: result,
+                error: 'Bot has exceeded its time limit'
+            }
+        }
+    }
 }
 
 async function runGame(game, bots, options) {
     game = copy(game);
     bots = bots.map(copy);
     options = Object.assign({}, defaultOptions, options);
+
+    bots.forEach((b, i) => b.nr = i);
+
     const directory = getDataDirectory();
-    options.outputPath = directory;
     await fs.mkdirs(directory);
-    return await runGamePromise(game, bots, options);
+    
+    const historyPath = path.join(directory, 'history.json');
+    
+    const object = {
+        results: null,
+        inputs: bots.map(b => path.join(directory, 'input' + b.nr)),
+        outputs: bots.map(b => path.join(directory, 'output' + b.nr)),
+        errs: bots.map(b => path.join(directory, 'stderr' + b.nr)),
+        history: historyPath
+    };
+
+    const history = {
+        updates: [],
+        fails: [],
+        results: null,
+        initialInfo: {}
+    };
+
+    var monitors = [];
+    var currentTurn = 0;
+
+    game.args.push(options.seed, bots.length);
+    game.process = childProcess.spawn(game.command, game.args, {
+        stdio: ['ignore', 'ipc', process.stderr].concat(repeat(2 * bots.length, 'pipe'))
+    });
+
+    bots.forEach(b => {
+        b.process = childProcess.spawn(b.command, b.args);
+        b.input = game.process.stdio[2 * b.nr + 3];
+        b.output = b.process.stdout;
+        b.stderr = fs.createWriteStream(object.errs[b.nr]);
+
+        b.input.pipe(b.process.stdin, { end: true });
+        b.input.pipe(fs.createWriteStream(object.inputs[b.nr]));
+
+        b.output.pipe(game.process.stdio[2 * b.nr + 1 + 3], { end: false });
+        b.output.pipe(fs.createWriteStream(object.outputs[b.nr]));
+
+        b.process.stdin.on('error', console.error);
+        b.process.stdout.on('error', console.error);
+        game.process.stdio[2 * b.nr + 3].on('error', console.error);
+        game.process.stdio[2 * b.nr + 1 + 3].on('error', console.error);
+
+        b.process.stderr.pipe(b.stderr);
+
+        monitors.push(monitorBotTimeout(b, options.timeLimit, monitors.length));
+
+        b.process.on('exit', () => {
+            console.log('process', b.nr, 'exited');
+            b.process = null;
+            if(game.process) {
+                game.process.stdio[2 * b.nr + 1 + 3].end();
+            }
+        });
+    });
+
+    function playerFailed(nr, reason) {
+        if(bots[nr].finished) {
+            return;
+        }
+        bots[nr].finished = true;
+        history.fails.push({
+            player: nr,
+            reason: reason,
+            turn: currentTurn
+        });
+        if(bots[nr].process) {
+            bots[nr].process.kill('SIGKILL');
+        }
+    }
+
+    async function monitorGame(result) {
+        const message = promiseUtil.messageReader(game.process);
+        while(true) {
+            var m;
+            try {
+                m = await promiseUtil.runWithTimeout(message(), 
+                    options.messageTimeLimit, 'timeout');
+            } catch(e) {
+                throw {
+                    object: game,
+                    result: result,
+                    error: 'Game process has terminated unexpectedly'
+                };
+            }
+            if(m == 'timeout') {
+                throw {
+                    object: game,
+                    error: "Game didn't send any message within specified timeout"
+                };
+            }
+            switch(m.type) {
+                case 'player_failed':
+                    playerFailed(m.player, m.reason);
+                    break;
+                case 'finished':
+                    object.results = history.results = m.results;
+                    return result;
+                case 'update':
+                    if(m.nextTurn) {
+                        currentTurn++;
+                    }
+                    history.updates.push({
+                        turn: currentTurn,
+                        description: m.description
+                    });
+                    break;
+                case 'initial_info':
+                    history.initialInfo = m.description;
+                    break;
+                case 'keep_alive':
+                    break;
+                default:
+                    throw {
+                        object: game,
+                        error: 'Incorrect message received from Game instance'
+                    };
+            }
+        }
+    }
+
+    function clean() {
+        bots.concat(game).forEach(o => {
+            if(o.process) {
+                o.process.kill('SIGKILL');
+            }
+        });
+    }
+
+    game.process.on('exit', () => game.process = null);
+
+    monitors.push(monitorGame(game));
+    while(true) {
+        try {
+            const finished = await Promise.race(monitors);
+            if(finished == game || finished == undefined) {
+                break;
+            } else {
+                monitors[finished] = promiseUtil.forever();
+            }
+        } catch(e) {
+            if(e.object == game) {
+                clean();
+                throw new Error(e.error);
+            } else {
+                playerFailed(e.object.nr, e.error);
+                monitors[e.result] = promiseUtil.forever();
+            }
+        }
+    }
+
+    clean();
+    await fs.writeJson(historyPath, history);
+    return object;
 }
 
 module.exports = { runGame: runGame };
