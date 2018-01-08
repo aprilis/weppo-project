@@ -33,7 +33,11 @@ router.get('/run-tictactoe', (req, res) => {
     runGame(game, [bot, bot]).then((result) => {
         res.sendFile(result.history);
     }).catch(console.error);
-})
+});
+
+router.get('/tictactoe-anim', (req, res) => {
+    res.render('testing/tictactoe-anim');
+});
 
 function buildCode(code) {
     return build({
