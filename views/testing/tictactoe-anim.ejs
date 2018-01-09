@@ -9,25 +9,25 @@
                 line-height: 400px;
                 text-align: center;
             }
-            textarea {
+            .editor {
                 min-width: 300px;
                 min-height: 300px;
                 margin: 20px;
+                border: 1px solid gray;
             }
         </style>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>        
     </head>
     <body>
         <form id="send-code" method="post" enctype="multipart/form-data">
             <div style="display: flex;">
                 <div>
-                    <textarea form="send-code" name="code1-text" 
-                        placeholder="C++ code of the first bot" wrap="soft"></textarea><br>
+                    <div class="editor" id="code1-text"></div><br>
                     <input name="code1-file" type="file"><br>
                 </div>
                 <div>
-                    <textarea form="send-code" name="code2-text" 
-                        placeholder="C++ code of the second bot" wrap="soft"/></textarea><br>
+                    <div class="editor" id="code2-text"></div><br> 
                     <input name="code2-file" type="file"><br>
                 </div>
             </div>
@@ -44,6 +44,15 @@
         </div>
         <script src="/API/AnimationAPI.js"> </script>
         <script src="/API/Animation.js"></script>
+        <script>
+            editors = {};
+            ['code1-text', 'code2-text'].forEach(id => {
+                var editor = ace.edit(id);
+                //editor.setTheme("ace/theme/monokai");
+                editor.getSession().setMode("ace/mode/c_cpp");
+                editors[id] = editor;
+            });
+        </script>
         <script> 
             function initAnimation() {
                 setAnimationSpeed(2000);
@@ -79,11 +88,11 @@
                 var data = new FormData();
                 for(var id of ['code1', 'code2']) {
                     var codeFile = $('#send-code :input[name="' + id + '-file"]')[0];
-                    var codeText = $('#send-code :input[name="' + id + '-text"]')[0];
+                    var codeText = editors[id + '-text'];
                     if(codeFile.files[0]) {
                         data.append(id, codeFile.files[0]);
                     } else {
-                        data.append(id, new Blob([codeText.value]));
+                        data.append(id, new Blob([codeText.getSession().getValue()]));
                     }
                 }
                 fetch('/testing/run-tictactoe-code', {
