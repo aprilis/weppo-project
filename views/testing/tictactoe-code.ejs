@@ -14,8 +14,15 @@
                 min-height: 300px;
                 margin: 20px;
             }
+            .code-editor {
+                min-width: 300px;
+                min-height: 300px;
+                margin: 20px;
+                border: 1px solid gray;
+            }
         </style>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>        
     </head>
     <body>
         <form id="send-code" method="post" enctype="multipart/form-data">
@@ -34,6 +41,20 @@
             <br>
             <input type="submit" value="Fight!">
         </form>
+        <%- include('../partials/code-editor', {
+            editorId: 'editor',
+            languages: {
+                cpp: {
+                    name: 'C++',
+                    editorCode: 'c_cpp'
+                },
+                python: {
+                    name: 'Python',
+                    editorCode: 'python'
+                }
+            },
+            defaultLanguage: 'cpp'
+        }) %>
         <div id="arena">
             <div id="loading">
                 Ładowanie...

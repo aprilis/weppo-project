@@ -1,0 +1,31 @@
+<div class="code-editor-container" id='<%= editorId %>'>
+    <select class="language-select">
+        <% for(var key in languages) { %>
+            <option value='<%= key %>'
+                <% if(key == defaultLanguage) { %>
+                    selected
+                <%} %> > <%= languages[key].name %> </option>
+        <% } %>
+    </select>
+    <div class="code-editor"></div>
+    <script>
+        (function() {
+            var id = '<%= editorId %>';
+            var languages = <%- JSON.stringify(languages) %>;
+            var element = $('#' + id + ' .code-editor');
+            var editor = ace.edit(element[0]);
+            var select = $('#' + id + ' .language-select');
+            function updateLanguage() {
+                var lang = select[0].value;
+                editor.getSession().setMode('ace/mode/' + languages[lang].editorCode);
+            }
+            function updateCode() {
+                element.val(editor.getSession().getValue());
+            }
+            updateLanguage();
+            updateCode();
+            select.on('change', updateLanguage);
+            editor.getSession().on('change', updateCode);
+        })();
+    </script>
+</div>
