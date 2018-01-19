@@ -20,7 +20,7 @@ Jak działa `runGame`:
     - `results`: wyniki gry, w takim formacie jak wcześniej
     - `initialInfo`: może zawierać cokolwiek, co gra uzna za potrzebne dla wizualizacji. Może też być nullem
     
- - nadzorca gry musi dbać o 3 rzeczy:
+- nadzorca gry musi dbać o 3 rzeczy:
   - wysyłanie informacji o grze do serwera. W tym celu wypisuje na standardowe wyjście json, który zawsze zawiera pole `type`. Pozostałe pola zależą od typu: Dostępne typy:
     - `player_failed` - wtedy wiadomość powinna też zawierać pola `player` i `reason` informujące o tym, który gracz przegrał i dlaczego
     - `finished` - informacja o końcu gry, wiadomość powinna zawierać pole `results` w takim formacie, jak wcześniej
