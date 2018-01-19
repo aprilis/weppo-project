@@ -1,27 +1,26 @@
-<% var title = 'Games arena' %>
-<% include head.ejs %>
-<% include alert.ejs %>
+<%- include('partials/head.ejs', { title: 'Game Arena' }) %>
+<%- include('partials/alert.ejs') %>
 
-<% var userName = user.userName %>
-<% include userPartial.ejs %>
+<%- include('partials/user.ejs', { userName: user.userName }) %>
 
 <header>
     <h1 class="text-center"> Welcome <%= userName%>!</h1>
 </header>
-    <h2>
-        Please, choose game you want to compete in:
-    </h2>
+<h2>
+    Please, choose game you want to compete in:
+</h2>
 
-    <div class="row">
-        <div class="col col-sm-4 col-md-6 col-lg-6"><strong>TicTacToe</strong></div>
-        <div class="col col-sm-8 col-md-6 col-lg-6"> <a href="/games/tictactoe">Get in</a></div>
-    </div>
-    <div class="row">
-        <div class="col col-sm-4 col-md-6 col-lg-6"><strong>Game #2</strong></div>
-        <div class="col col-sm-8 col-md-6 col-lg-6"> Get in</div>
-    </div>
-    <div class="row">
-        <div class="col col-sm-4 col-md-6 col-lg-6"><strong>Game #3</strong></div>
-        <div class="col col-sm-8 col-md-6 col-lg-6"> Get in</div>
-    </div>
-<% include foot.ejs %>
+<div class="row">
+    <div class="col col-sm-4 col-md-6 col-lg-6"><strong>TicTacToe</strong></div>
+    <div class="col col-sm-8 col-md-6 col-lg-6"> <a href="/games/tictactoe">Get in</a></div>
+</div>
+<div class="row">
+    <div class="col col-sm-4 col-md-6 col-lg-6"><strong>Game #2</strong></div>
+    <div class="col col-sm-8 col-md-6 col-lg-6"> Get in</div>
+</div>
+<div class="row">
+    <div class="col col-sm-4 col-md-6 col-lg-6"><strong>Game #3</strong></div>
+    <div class="col col-sm-8 col-md-6 col-lg-6"> Get in</div>
+</div>
+
+<%- include('partials/end.ejs') %>

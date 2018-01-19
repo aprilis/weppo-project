@@ -1,6 +1,5 @@
-<% var title = 'Register' %>
-<% include head.ejs %>
-<% include alert.ejs %>
+<%- include('partials/head.ejs', { title: 'Register' }) %>
+<%- include('partials/alert.ejs') %>
 
 <header>
     <h1 class="text-center">Sign up to platform</h1>
@@ -27,4 +26,5 @@
         <input type="submit" value="Sign up" class="btn btn-default">
     </div>
 </form>
-<% include foot.ejs %>
+
+<%- include('partials/end.ejs') %>

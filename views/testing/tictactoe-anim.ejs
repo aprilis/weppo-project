@@ -1,112 +1,111 @@
-<html>
-    <head>
-        <style>
-            #arena {
-                width: 600px;
-                height: 400px;
-            }
-            #loading {
-                line-height: 400px;
-                text-align: center;
-            }
-            .editor {
-                min-width: 300px;
-                min-height: 300px;
-                margin: 20px;
-                border: 1px solid gray;
-            }
-        </style>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src="/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>        
-    </head>
-    <body>
-        <form id="send-code" method="post" enctype="multipart/form-data">
-            <div style="display: flex;">
-                <div>
-                    <div class="editor" id="code1-text"></div><br>
-                    <input name="code1-file" type="file"><br>
-                </div>
-                <div>
-                    <div class="editor" id="code2-text"></div><br> 
-                    <input name="code2-file" type="file"><br>
-                </div>
-            </div>
-            <br>
-            <input type="submit" value="Fight!">
-        </form>
-        <div id="arena">
-            <div id="loading">
-                Ładowanie...
-            </div>
-            <div id="animation">
-                <canvas id="canvas" width="600px" height="400px" style="border:1px solid #000000;"/>
-            </div>
+<%- include('../partials/head.ejs', { title: 'Testowanie' }) %>
+<%- include('../partials/alert.ejs') %>
+
+<style>
+    #arena {
+        width: 600px;
+        height: 400px;
+    }
+    #loading {
+        line-height: 400px;
+        text-align: center;
+    }
+    .editor {
+        min-width: 300px;
+        min-height: 300px;
+        margin: 20px;
+        border: 1px solid gray;
+    }
+</style>
+<script src="/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="/API/AnimationAPI.js"> </script>
+<script src="/API/Animation.js"></script>
+
+<form id="send-code" method="post" enctype="multipart/form-data">
+    <div style="display: flex;">
+        <div>
+            <div class="editor" id="code1-text"></div><br>
+            <input name="code1-file" type="file"><br>
         </div>
-        <script src="/API/AnimationAPI.js"> </script>
-        <script src="/API/Animation.js"></script>
-        <script>
-            editors = {};
-            ['code1-text', 'code2-text'].forEach(id => {
-                var editor = ace.edit(id);
-                //editor.setTheme("ace/theme/monokai");
-                editor.getSession().setMode("ace/mode/c_cpp");
-                editors[id] = editor;
-            });
-        </script>
-        <script> 
-            function initAnimation() {
-                setAnimationSpeed(2000);
-            }
+        <div>
+            <div class="editor" id="code2-text"></div><br> 
+            <input name="code2-file" type="file"><br>
+        </div>
+    </div>
+    <br>
+    <input type="submit" value="Fight!">
+</form>
+<div id="arena">
+    <div id="loading">
+        Ładowanie...
+    </div>
+    <div id="animation">
+        <canvas id="canvas" width="600px" height="400px" style="border:1px solid #000000;"/>
+    </div>
+</div>
+<script>
+    editors = {};
+    ['code1-text', 'code2-text'].forEach(id => {
+        var editor = ace.edit(id);
+        //editor.setTheme("ace/theme/monokai");
+        editor.getSession().setMode("ace/mode/c_cpp");
+        editors[id] = editor;
+    });
+</script>
+<script> 
+    function initAnimation() {
+        setAnimationSpeed(2000);
+    }
 
-            function sign(nr) {
-                        if (nr == -1) return "";
-                        if (nr == 0) return "O";
-                        if (nr == 1) return "X";
-            }
+    function sign(nr) {
+                if (nr == -1) return "";
+                if (nr == 0) return "O";
+                if (nr == 1) return "X";
+    }
 
 
-            function drawFrame(data) {
-                var ctx = getCanvas();
-                ctx.fillStyle = "red";
-                ctx.fillRect(0,0,300,300);
-                ctx.fillStyle = "black";
-                ctx.font = "100px Arial";
-                for (var i =0; i<3; i++) {
-                    for (var j=0; j<3; j++) {
-                        ctx.fillText(sign(data.description.board[i][j]), j*100, (i+1)*100);
-                    }
-                }
+    function drawFrame(data) {
+        var ctx = getCanvas();
+        ctx.fillStyle = "red";
+        ctx.fillRect(0,0,300,300);
+        ctx.fillStyle = "black";
+        ctx.font = "100px Arial";
+        for (var i =0; i<3; i++) {
+            for (var j=0; j<3; j++) {
+                ctx.fillText(sign(data.description.board[i][j]), j*100, (i+1)*100);
             }
-        </script>
-        <script>
-            $('#animation').hide();
-            $('#arena').hide();
-            $('#send-code').on('submit', e => {
-                $('#arena').show();
-                $('#send-code').hide();
-                e.preventDefault();
-                var data = new FormData();
-                for(var id of ['code1', 'code2']) {
-                    var codeFile = $('#send-code :input[name="' + id + '-file"]')[0];
-                    var codeText = editors[id + '-text'];
-                    if(codeFile.files[0]) {
-                        data.append(id, codeFile.files[0]);
-                    } else {
-                        data.append(id, new Blob([codeText.getSession().getValue()]));
-                    }
-                }
-                fetch('/testing/run-tictactoe-code', {
-                    method: 'post',
-                    body: data
-                })  .then(response => response.json())
-                    .then(response => {
-                        console.log(response);
-                        $('#loading').hide();
-                        $('#animation').show();
-                        drawAnimation(canvas, response);
-                    })
-                    .catch(console.error);
-            });
-        </script>
-    </body>
-</html>
+        }
+    }
+</script>
+<script>
+    $('#animation').hide();
+    $('#arena').hide();
+    $('#send-code').on('submit', e => {
+        $('#arena').show();
+        $('#send-code').hide();
+        e.preventDefault();
+        var data = new FormData();
+        for(var id of ['code1', 'code2']) {
+            var codeFile = $('#send-code :input[name="' + id + '-file"]')[0];
+            var codeText = editors[id + '-text'];
+            if(codeFile.files[0]) {
+                data.append(id, codeFile.files[0]);
+            } else {
+                data.append(id, new Blob([codeText.getSession().getValue()]));
+            }
+        }
+        fetch('/testing/run-tictactoe-code', {
+            method: 'post',
+            body: data
+        })  .then(response => response.json())
+            .then(response => {
+                console.log(response);
+                $('#loading').hide();
+                $('#animation').show();
+                drawAnimation(canvas, response);
+            })
+            .catch(console.error);
+    });
+</script>
+
+<%- include('../partials/end.ejs') %>

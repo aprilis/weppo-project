@@ -1,6 +1,5 @@
-<% var title = 'BotPlatform' %>
-<% include head.ejs %>
-<% include alert.ejs %>
+<%- include('partials/head.ejs', { title: 'BotPlatform' }) %>
+<%- include('partials/alert.ejs') %>
 
 <h1>
     Welcome to BotPlatform
@@ -9,7 +8,7 @@
 </h1>
 
 <h2>
-<a href="/testing">Podstrony testowe</a>
+    <a href="/testing">Podstrony testowe</a>
 </h2>
 
-<% include foot.ejs %>
+<%- include('partials/end.ejs') %>
