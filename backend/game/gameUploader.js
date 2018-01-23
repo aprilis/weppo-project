@@ -4,6 +4,8 @@ const fs = require('fs-extra');
 const { build } = require('./builder');
 const { repeat, copy } = require('../util/misc');
 
+var Game = require('../../models/Game');
+
 
 /*
  Submission format 
@@ -19,6 +21,7 @@ const { repeat, copy } = require('../util/misc');
 
 /* 
     game = {
+        name:
         command : 
         args :
         script : 
@@ -51,11 +54,14 @@ async function buildGame(Sub) {
     });
     game.scriptPath = path.join(getScriptDirectory(Sub), 'script.js');
     game.owner = Sub.username;
+    game.name = Sub.gamename;
     return game;
 }
 
-function gameExists (Sub) {
-    return false;
+
+async function gameExists (Sub) {
+    var exists = await Game.existsPromise(Sub.gamename);
+    return exists;
 }
 
 async function uploadGame(Sub, options) {
@@ -68,7 +74,11 @@ async function uploadGame(Sub, options) {
     await fs.mkdirs(scriptDirectory);
     fs.copySync(Sub.codePath, path.join(codeDirectory, 'code') );
     fs.copySync(Sub.scriptPath, path.join(scriptDirectory, 'script.js'));
-    return buildGame(Sub);
+
+    var game = buildGame(Sub);
+    console.log("game built")
+    //await Game.savePromise(game);
+    return game;
 }
 
 module.exports = { uploadGame : uploadGame};
