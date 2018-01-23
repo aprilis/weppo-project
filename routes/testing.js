@@ -39,6 +39,10 @@ router.get('/tictactoe-anim', (req, res) => {
     res.render('testing/tictactoe-anim');
 });
 
+router.get('/upload', (req, res) => {
+    res.render('testing/upload.ejs');
+});
+
 function buildCode(code) {
     return build({
         type: 'bot',
