@@ -1,3 +1,24 @@
 .table .row:nth-child(even) {
     background-color: #f1f1f1;
 }
+
+.game-current-turn {
+    display: inline-block;
+    text-align: center;
+    width: 75%;
+}
+
+.game-navigator {
+}
+
+.game-navigator-buttons {
+    display: inline-block;
+    width: 24.3361%;
+}
+
+.game-viewer {
+    display: flex;
+}
+
+canvas {
+}

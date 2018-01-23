@@ -46,6 +46,10 @@ router.get('/upload', (req, res) => {
     res.render('testing/upload.ejs');
 });
 
+router.get('/viewer', (req, res) => {
+    res.render('testing/viewer.ejs');
+});
+
 /*
  Submission format 
     {
