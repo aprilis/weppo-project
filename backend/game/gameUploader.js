@@ -69,7 +69,7 @@ async function gameExists (Sub) {
 function saveGamePromise(game) {
     console.log("saving game ", game.name);
 
-    return new Promise((res) => {
+    return new Promise((res, rej) => {
         var g = new Game({
             name : game.name,
             command : game.command,
@@ -79,7 +79,8 @@ function saveGamePromise(game) {
         });
 
         g.save((err) => {
-            if(err) console.log("ERROR ", err);
+            if (err) rej(err);
+            res(g);
         });
     });
 }
