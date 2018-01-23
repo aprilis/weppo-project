@@ -2,6 +2,7 @@ var mongoose = require('mongoose')
 
 /* 
     Game = {
+        name :
         command : 
         args :
         script : 
@@ -12,7 +13,7 @@ var mongoose = require('mongoose')
 var GameSchema = mongoose.Schema({
     name : {type: String, required : true},
     command : {type: String, required : true},
-    args : {type: String, required : true},
+    args : {type: [String]},
     script : {type: String, required : true},
     owner :{type: String, required : true}
 });
@@ -28,7 +29,17 @@ GameSchema.statics.existsPromise = function (name) {
     });
 };
 
+GameSchema.statics.getAllPromise = function () {
+    return new Promise( 
+        (res, rej ) => {
+            this.find( {}, (err, games ) => {
+                if(err) rej(err);
+                res(games);
+        });
+    });
+};
 
-module.exports = mongoose.model('Game', UserSchema);
+
+module.exports = mongoose.model('Game', GameSchema);
 
 
