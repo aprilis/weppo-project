@@ -48,8 +48,8 @@ async function buildGame(Sub) {
     var game = await build({
         type: 'game',
         codePath: Sub.codePath,
-        username: Sub.username,
         gamename: Sub.gamename,
+        username: Sub.username,
         language: Sub.language
     });
     game.scriptPath = path.join(getScriptDirectory(Sub), 'script.js');
@@ -60,13 +60,38 @@ async function buildGame(Sub) {
 
 
 async function gameExists (Sub) {
+    console.log("checking ", Sub.gamename);
     var exists = await Game.existsPromise(Sub.gamename);
+    console.log("GAME EXISTS ", exists);
     return exists;
+}
+
+function saveGamePromise(game) {
+    console.log("saving game ", game.name);
+
+    return new Promise((res) => {
+        var g = new Game({
+            name : game.name,
+            command : game.command,
+            args :  game.args,
+            script : game.scriptPath,
+            owner : game.owner
+        });
+
+        g.save((err) => {
+            if(err) console.log("ERROR ", err);
+        });
+    });
 }
 
 async function uploadGame(Sub, options) {
     Sub = copy(Sub);
-    if (gameExists(Sub)) throw(new Error("game of the given name already exists"));
+    var exist = await gameExists(Sub);
+    console.log("EXIST", exist);
+    if (exist == true) {
+        console.log("SHIT");
+        return ({error :"gamekjanja of the given name already exists"});
+    }
     options = Object.assign({}, defaultOptions, options);    
     const codeDirectory = getCodeDirectory(Sub);
     const scriptDirectory = getScriptDirectory(Sub);
@@ -74,10 +99,15 @@ async function uploadGame(Sub, options) {
     await fs.mkdirs(scriptDirectory);
     fs.copySync(Sub.codePath, path.join(codeDirectory, 'code') );
     fs.copySync(Sub.scriptPath, path.join(scriptDirectory, 'script.js'));
-
-    var game = buildGame(Sub);
+    try {
+    var game = await buildGame(Sub);
+    }
+    catch(e) {
+        return ({error : e});
+    }
     console.log("game built")
-    //await Game.savePromise(game);
+    console.log(game);
+    await saveGamePromise(game);
     return game;
 }
 

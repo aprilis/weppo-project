@@ -6,6 +6,9 @@ const { runGame } = require('../backend/game/runner');
 const { build } = require('../backend/game/builder');
 const router = express.Router();
 const upload = multer({ dest: 'data/code' });
+const {uploadGame} = require('../backend/game/gameUploader');
+
+const fs= require('fs');
 
 router.get('/', (req, res) => {
     res.render('testing/index');
@@ -43,6 +46,35 @@ router.get('/upload', (req, res) => {
     res.render('testing/upload.ejs');
 });
 
+/*
+ Submission format 
+    {
+        codePath : string
+        scriptPath : path to file
+        username : string 
+        gamename : string
+        language : string 
+    }
+
+*/
+
+router.post('/upload-run', upload.fields([{name: 'code', maxCount: 1},
+{name: 'script', maxCount: 1}]), (req, res) => {
+    
+        var codePath = req.files.code[0].path;
+        var scriptPath = req.files.script[0].path;
+        var title=  req.body.title;
+        uploadGame({
+            codePath : codePath,
+            scriptPath : scriptPath, 
+            username : 'Maro',
+            gamename : title,
+            language : 'cpp'
+        }).then( (result ) => {
+            res.send(JSON.stringify(result));
+        }).catch( console.error );
+});
+
 function buildCode(code) {
     return build({
         type: 'bot',
@@ -65,6 +97,7 @@ async function letThemFight(code1, code2) {
 router.post('/run-tictactoe-code', upload.fields([{name: 'code1', maxCount: 1},
     {name: 'code2', maxCount: 1}]), (req, res) => {
     letThemFight(req.files.code1[0].path, req.files.code2[0].path).then((result) => {
+        console.log(result.history);
         res.sendFile(result.history)
     }).catch(console.error);
 });
