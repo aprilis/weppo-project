@@ -15,6 +15,10 @@ function getCanvas() {
     return $(animationData.canvasSelector)[0].getContext("2d");
 }
 
+function getCanvasElement() {
+    return $(animationData.canvasSelector)[0];
+}
+
 function getCanvasWidth() {
     return $(animationData.canvasSelector).prop('width');
 }

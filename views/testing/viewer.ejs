@@ -5,26 +5,83 @@
 
 <script src="/API/AnimationAPI.js"></script>
 <script src="/API/Viewer.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.22/fabric.min.js"></script>
 <script>
+    const fc = new fabric.Canvas(getCanvasElement());
+    function disableSelection() {
+        fc.forEachObject(o => o.selectable = false);
+    }
+
+    fc.selection = false;
+
+    const size = 100;
+    
+    //grid
+    [size, size * 2].forEach(x => {
+        fc.add(new fabric.Line([x, 0, x, size * 3], {
+            fill: 'gray',
+            stroke: 'gray',
+            strokeWidth: 5,
+        }));
+        fc.add(new fabric.Line([0, x, size * 3, x], {
+            fill: 'gray',
+            stroke: 'gray',
+            strokeWidth: 5,
+        }));
+    });
+
+    circles = [];
+    crosses = [];
+
+    //objects
+    for(var i = 0; i < 3; i++) {
+        circles[i] = [];
+        crosses[i] = [];
+        for(var j = 0; j < 3; j++) {
+            var options = {
+                fontSize: size * 0.7,
+                fontFamily: 'arial',
+                fill: 'black',
+                stroke: null,
+                originX: 'center',
+                originY: 'center',
+                scaleX: 0,
+                scaleY: 0,
+                left: size * (i + 0.5),
+                top: size * (j + 0.5)
+            };
+            circles[i][j] = new fabric.Text('O', options);
+            crosses[i][j] = new fabric.Text('X', options);
+            fc.add(circles[i][j], crosses[i][j]);
+        }
+    }
+
+    disableSelection();
+
+
     function initAnimation(history) {
         setAnimationSpeed(1000);
     }
 
-    function sign(nr) {
-        if (nr == -1) return "";
-        if (nr == 0) return "O";
-        if (nr == 1) return "X";
+    function animate(object, target) {
+        if(object.scaleX == target) {
+            return;
+        }
+        object.animate('scaleX', target, {
+            onChange: fc.renderAll.bind(fc)
+        });
+        object.animate('scaleY', target, {
+            onChange: fc.renderAll.bind(fc)
+        });
     }
 
     function drawFrame(data) {
-        var ctx = getCanvas();
-        ctx.fillStyle = "red";
-        ctx.fillRect(0,0,300,300);
-        ctx.fillStyle = "black";
-        ctx.font = "100px Arial";
-        for (var i =0; i<3; i++) {
-            for (var j=0; j<3; j++) {
-                ctx.fillText(sign(data.description.board[i][j]), j*100, (i+1)*100);
+        for(var i = 0; i < 3; i++) {
+            for(var j = 0; j < 3; j++) {
+                const targetCircle = data.description.board[i][j] == 0 ? 1 : 0;
+                const targetCross = data.description.board[i][j] == 1 ? 1 : 0;
+                animate(circles[i][j], targetCircle);
+                animate(crosses[i][j], targetCross);
             }
         }
     }
