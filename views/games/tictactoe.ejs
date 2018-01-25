@@ -88,13 +88,15 @@
             socket.emit('authentication', null);
         });
 
-        socket.on('authentication', function(result) {
-            if (result) {
-                alert('Great! You got authenticated.');
-            }
-            else {
-                alert("Something went wrong. You are not authenticated.");
-            }
+        socket.on('authentication', function(messages) {
+            alert('Great! You got authenticated.');
+
+            messages.forEach(message => {
+                var user = message.userName;
+                var message = message.message;
+                messages.append($('<li>').text(user + ": " + message));
+                $("html, body").scrollTop($(document).height());
+            });
         });
 
         socket.on('updateUserNames', function(userNames) {

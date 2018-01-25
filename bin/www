@@ -9,6 +9,9 @@ var debug = require('debug')('todoAPI:server');
 var http = require('http');
 var settings = require('../config/settings.js');
 
+// for adding messages
+var mongoose = require('mongoose');
+
 /**
  * Get port from environment and store in Express.
  */
@@ -81,10 +84,28 @@ function updateUserNames() {
   });
 }
 
+function saveMessagePromise(message) {
+  console.log("saving message ", message.message);
+
+  return new Promise((res, rej) => {
+      var newMessage = new Message({
+        userName: message.userName,
+        message: message.message,
+        sent_at: message.sent_at
+      });
+
+      newMessage.save((err) => {
+          if (err) rej(err);
+          res(g);
+      });
+  });
+}
+
 var clients = [];
 
 var cookie = require('cookie');
 var signature = require('cookie-signature');
+var Message = require('../models/Message');
 var secret = 'secret';
 
 io.sockets.on('connection', function(socket){
@@ -99,12 +120,25 @@ io.sockets.on('connection', function(socket){
     }
   
     clients.push(client);
-    client.socket.emit('authentication', true);
+
+    // get database messages here
+    var messages = Message.getAllPromise();
+
+    client.socket.emit('authentication', messages);
     updateUserNames();
   })
 
   // Send message
   socket.on('message', function(message){
+    // Add to database
+    var newMessage = new Message({
+      userName: socket.request.user.userName,
+      message: message,
+      sent_at: Date.now()
+    });
+
+    Message.saveMessagePromise(newMessage);
+
     clients.forEach(client => {
       client.socket.emit('message', {
         user: socket.request.user.userName,
