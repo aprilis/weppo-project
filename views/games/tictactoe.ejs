@@ -88,10 +88,10 @@
             socket.emit('authentication', null);
         });
 
-        socket.on('authentication', function(messages) {
+        socket.on('authentication', function(msg) {
             alert('Great! You got authenticated.');
 
-            messages.forEach(message => {
+            msg.forEach(message => {
                 var user = message.userName;
                 var message = message.message;
                 messages.append($('<li>').text(user + ": " + message));
