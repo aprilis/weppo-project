@@ -106,6 +106,7 @@ io.sockets.on('connection', function(socket){
 
     // get database messages here
     var messages = await Message.getAllPromise();
+    console.log(messages);
 
     client.socket.emit('authentication', messages);
     updateUserNames();
