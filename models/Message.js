@@ -16,7 +16,7 @@ MessageSchema.statics.getAllPromise = function () {
     });
 };
 
-MessageSchema.statics.saveMessagePromise(message) = function () {
+MessageSchema.statics.saveMessagePromise = function (message) {
     return new Promise((res, rej) => {
         var msg = new Message({
             userName : message.userName,
@@ -31,4 +31,6 @@ MessageSchema.statics.saveMessagePromise(message) = function () {
     });
 };
 
-module.exports = mongoose.model('Message', MessageSchema);
+const Message = mongoose.model('Message', MessageSchema);
+
+module.exports = Message;

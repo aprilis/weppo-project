@@ -112,7 +112,7 @@ io.sockets.on('connection', function(socket){
   console.log('Socket Connected...');
 
   // Authenticate
-  socket.on('authentication', function(data) {
+  socket.on('authentication', async function(data) {
     var client = {
       socket: socket,
       user: socket.request.user,
@@ -122,7 +122,7 @@ io.sockets.on('connection', function(socket){
     clients.push(client);
 
     // get database messages here
-    var messages = Message.getAllPromise();
+    var messages = await Message.getAllPromise();
 
     client.socket.emit('authentication', messages);
     updateUserNames();
