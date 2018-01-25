@@ -84,23 +84,6 @@ function updateUserNames() {
   });
 }
 
-function saveMessagePromise(message) {
-  console.log("saving message ", message.message);
-
-  return new Promise((res, rej) => {
-      var newMessage = new Message({
-        userName: message.userName,
-        message: message.message,
-        sent_at: message.sent_at
-      });
-
-      newMessage.save((err) => {
-          if (err) rej(err);
-          res(g);
-      });
-  });
-}
-
 var clients = [];
 
 var cookie = require('cookie');
