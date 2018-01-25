@@ -16,4 +16,19 @@ MessageSchema.statics.getAllPromise = function () {
     });
 };
 
+MessageSchema.statics.saveMessagePromise(message) = function () {
+    return new Promise((res, rej) => {
+        var msg = new Message({
+            userName : message.userName,
+            message : message.message,
+            created_at :  message.created_at
+        });
+
+        msg.save((err) => {
+            if (err) rej(err);
+            res(msg);
+        });
+    });
+};
+
 module.exports = mongoose.model('Message', MessageSchema);
