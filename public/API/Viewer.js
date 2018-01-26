@@ -55,6 +55,18 @@ function viewGame(viewerId, history) {
         updatePlayButton(viewer);
     });
 
+    viewer.on('click', '.play-backward', () => {
+        if(!isAnimationPlaying() && currentUpdate > 0) {
+            setCurrentUpdate(currentUpdate - 1);
+        }
+    });
+
+    viewer.on('click', '.play-forward', () => {
+        if(!isAnimationPlaying() && currentUpdate + 1 < history.updates.length) {
+            setCurrentUpdate(currentUpdate + 1);
+        }
+    });
+
     playAnimation();
     updatePlayButton(viewer);
 }
