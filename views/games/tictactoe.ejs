@@ -91,12 +91,12 @@
         socket.on('authentication', function(msg) {
             alert('Great! You got authenticated.');
 
-            // msg.forEach(message => {
-            //     var user = message.userName;
-            //     var message = message.message;
-            //     messages.append($('<li>').text(user + ": " + message));
-            //     $("html, body").scrollTop($(document).height());
-            // });
+            msg.forEach(message => {
+                var user = message.userName;
+                var message = message.message;
+                messages.append($('<li>').text(user + ": " + message));
+                $("html, body").scrollTop($(document).height());
+            });
         });
 
         socket.on('updateUserNames', function(userNames) {
