@@ -51,6 +51,14 @@ io.use(passportSocketIo.authorize({
     // don't use passport here!
 }));
 
+/**
+ * Set up socket.io for chat management
+ */
+
+const chat = require('../backend/chat');
+chat.initialize(io);
+
+
 function onAuthorizeSuccess(data, accept) {
   // This method make sure that the socket is authorized by passport!
   console.log('successful connection to socket.io (authorized by passport)');
@@ -72,76 +80,9 @@ function onAuthorizeFail(data, message, error, accept) {
   // see: http://socket.io/docs/client-api/#socket > error-object
 }
 
-// Update user names
-function updateUserNames() {
-  var userNames = [];
-  clients.forEach(client => {
-    userNames.push(client.userName)
-  });
-
-  clients.forEach(client => {
-    client.socket.emit('updateUserNames', userNames);
-  });
-}
-
-var clients = [];
-
 var cookie = require('cookie');
 var signature = require('cookie-signature');
-var Message = require('../models/Message');
 var secret = 'secret';
-
-io.sockets.on('connection', function(socket){
-  console.log('Socket Connected...');
-
-  // Authenticate
-  socket.on('authentication', async function(data) {
-    var client = {
-      socket: socket,
-      user: socket.request.user,
-      userName: socket.request.user.userName
-    }
-  
-    clients.push(client);
-
-    // get database messages here
-    var messages = await Message.getAllPromise();
-    console.log(messages);
-
-    client.socket.emit('authentication', messages);
-    updateUserNames();
-  })
-
-  // Send message
-  socket.on('message', function(message){
-    // Add to database
-    var newMessage = new Message({
-      userName: socket.request.user.userName,
-      message: message,
-      sent_at: Date.now()
-    });
-
-    Message.saveMessagePromise(newMessage);
-
-    clients.forEach(client => {
-      client.socket.emit('message', {
-        user: socket.request.user.userName,
-        message: message
-      });
-    });
-  })
-
-  // Disconnection
-  socket.on('disconnect', function(data){
-    for(var i = 0; i < clients.length; i++) {
-      if (clients[i].socket == socket) {
-        clients.splice(i, 1);
-        updateUserNames();
-        break;
-      }
-    }
-  })
-})
 
 /**
  * Normalize a port into a number, string, or false.
