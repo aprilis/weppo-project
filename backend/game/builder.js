@@ -2,6 +2,8 @@ const uniqid = require('uniqid');
 const path = require('path');
 const fs = require('fs-extra');
 const childProcess = require('child_process');
+const format = require('string-format');
+const config = require('../../config/builder');
 
 const dataPath = 'data/builds';
 
@@ -26,13 +28,25 @@ function getDataDirectory ( Sub ) {
     return path.resolve(dataPath, Sub.gamename, Sub.type, Sub.username, uniqid());
 }
 
-function buildPromise( Sub, options ) {
-    return new Promise( (res, rej) => {
+function copy(o) {
+    return Object.assign({}, o);
+}
+
+function splitCommand(command) {
+    const words = command.split(' ');
+    return {
+        command: words[0],
+        args: words.slice(1)
+    };
+}
+
+function runCompiler(Sub, buildCommand, options) {
+    return new Promise((res, rej) => {
         var returned = false;
 
         function clean() {
             if (Sub.process) Sub.process.kill('SIGKILL');
-            if(Sub.timeout)  clearTimeout(Sub.timeout);
+            if (Sub.timeout)  clearTimeout(Sub.timeout);
             Sub.timeout = null;
         }
 
@@ -42,7 +56,7 @@ function buildPromise( Sub, options ) {
             returned = true;
             res(...args);
         }
-    
+
         function failure(...args) {
             if(returned) return;
             console.log("FAILURE");
@@ -50,82 +64,61 @@ function buildPromise( Sub, options ) {
             rej(...args);        
         }
 
-        function codeExtension(Sub) {
-            switch(Sub.language) {
-                case 'cpp':
-                    return 'code.cpp';
-                    break;
-                case 'none':
-                    return 'code';
-                    break;
+        function onExecFinish(error, stdout, stderr) {
+            if (error) {
+                const message = "Compilation Error " + stderr;
+                failure(message);
+            }
+            else {
+                success();
             }
         }
 
-
-        try {
-            const codePath = path.join(options.dataDirectory, codeExtension(Sub));
-            const execPath = path.join(options.dataDirectory, 'executable');
-
-            const object = {
-                command : '',
-                args : []
-            };
-
-            function onExecFinish(error, stdout, stderr) {
-                if (error) {
-                    const message = "Compilation Error " + stderr;
-                    failure(message);
-                }
-                else {
-                    success(object);
-                }
-            }
-
-            function buildCPP(Sub) {
-                object.command = execPath;
-                var buildCommand = "g++ -std=c++11 " + codePath + " -o " + execPath;
-                Sub.process = childProcess.exec(buildCommand, onExecFinish);
-            }
-
-            if(Sub.codePath) {
-                fs.copySync(Sub.codePath, codePath);
-            } else {
-                fs.writeFileSync(codePath, Sub.code);
-            }
-            
-
-            switch(Sub.language) {
-                case 'cpp':
-                    buildCPP(Sub);
-                    break;
-                case 'none':
-                    failure( new Error('invalid language'));
-                    break;
-            }
-
-            Sub.timeout = setTimeout(() => {
-                clean();
-                failure(new Error("Code was compiling too long"));
-            }, options.timeLimit);
-
-        } catch(e) {
-            failure(e);
-        }
-
+        Sub.process = childProcess.exec(buildCommand, onExecFinish);
+        Sub.timeout = setTimeout(() => {
+            clean();
+            failure(new Error("Code was compiling too long"));
+        }, options.timeLimit);
     });
-}
 
-function copy(o) {
-    return Object.assign({}, o);
 }
 
 async function build( Sub, options ) {
+    console.log('build', Sub);
     Sub = copy(Sub);
     options = Object.assign({}, defaultOptions, options);
     const directory = getDataDirectory(Sub);
     options.dataDirectory = directory;
     await fs.mkdirs(directory);
-    return buildPromise(Sub, options)
+
+    function codeExtension(Sub) {
+        const ext = config[Sub.language].ext;
+        return 'code' + (ext ? '.' + ext : '');
+    }
+
+    const codePath = path.join(options.dataDirectory, codeExtension(Sub));
+    const execPath = path.join(options.dataDirectory, 'executable');
+
+    if(Sub.codePath) {
+        await fs.copy(Sub.codePath, codePath);
+    } else {
+        await fs.writeFile(codePath, Sub.code);
+    }
+
+    var buildCommand = config[Sub.language].build;
+    buildCommand = format(buildCommand, {
+        code: codePath,
+        exec: execPath
+    });
+
+    await runCompiler(Sub, buildCommand, options);
+    
+    var runCommand = config[Sub.language].run;
+    runCommand = format(runCommand, {
+        exec: execPath
+    });
+    console.log('builded code from', codePath, 'into', execPath);
+    return splitCommand(runCommand);
 }
 
 
