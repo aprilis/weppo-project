@@ -58,8 +58,7 @@
         if(scriptFile.files[0]) {
             data.append('script', scriptFile.files[0]);
         } else {
-            d
-            ata.append('script', new Blob([scriptText.value]));
+            data.append('script', new Blob([scriptText.value]));
         }
         
         var title = $('#send-game :input[name="gameTitle"]')[0];
