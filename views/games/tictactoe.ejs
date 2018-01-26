@@ -81,7 +81,11 @@
         var messages = $('#messages');
         var usersForm = $('#usersForm');
 
-        var socket = io.connect();
+        var socket = io({
+            query: {
+                room: 'tictactoe'
+            }
+        });
 
         socket.on('connect', function() { 
             console.log('connected');
