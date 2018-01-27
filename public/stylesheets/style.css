@@ -6,3 +6,9 @@ canvas {
     width: 100%;
     height: auto;
 }
+
+.code-editor {
+    min-height: 300px;
+    margin: 10px;
+    border: 1px solid gray;
+}

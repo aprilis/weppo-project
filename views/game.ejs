@@ -2,10 +2,37 @@
 <%- include('partials/alert.ejs') %>
 <%- include('partials/menu.ejs', {userName : user.userName}) %>
 
-<div class="row">
+<ul class="nav nav-pills">
+    <li class="active"><a data-toggle="pill" href="#desc">Description</a></li>
+    <li><a data-toggle="pill" href="#arena">Arena</a></li>
+</ul>
 
-    
-
+<div class="row" style="height: 20px"></div>
+<div class="tab-content">
+    <div id="desc" class="tab-pane fade in active">
+        <div class="h2 text-center"> Game Title </div>
+        <div>
+            Some introduction to the game
+            <h4>Details</h4>
+            Some details about the game mechanics
+            <h4>Input</h4>
+            Description of the standard input
+            <h4>Output</h4>
+            Description of the standard output
+        </div>
+    </div>
+    <div id="arena" class="tab-pane fade">
+        <div class="col-md-6">
+            <%- include('partials/code-editor', {
+                editorId: 'code1',
+                defaultLanguage: 'cpp'
+            }) %>
+        </div>
+        <div class="col-md-6">
+            <h3>Tutaj będzie wyświetlana gra</h3>
+        </div>
+    </div>
 </div>
 
+<%- include('partials/code-editor-init.ejs') %>
 <%- include('partials/end.ejs') %>
