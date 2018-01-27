@@ -38,6 +38,10 @@ router.get('/run-tictactoe', (req, res) => {
     }).catch(console.error);
 });
 
+router.get('/menu', (req, res ) => {
+    res.render('testing/menu');
+});
+
 router.get('/tictactoe-anim', (req, res) => {
     res.render('testing/tictactoe-anim');
 });
