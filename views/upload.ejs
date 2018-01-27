@@ -1,0 +1,90 @@
+<%- include('partials/head.ejs', { title: 'Upload Game' }) %>
+<%- include('partials/alert.ejs') %>
+<%- include('partials/menu.ejs', {userName : user.userName}) %>
+
+
+Complete requested fields and click submit to upload your new game ! 
+
+<% var username = user.userName %>
+<%= username %>
+
+<script src="/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+
+<style>
+    textarea {
+        min-width: 500px;
+        min-height: 300px;
+    }
+    #upload-form {
+        margin: 20px
+
+    }
+</style>
+
+
+    <form id="send-game" method="post" enctype="multipart/form-data">
+            Game title:<br>
+            <input type="text" name="gameTitle"><br>
+            <br>
+            Game code:<br>
+            <div style="display: flex;">
+                <div>
+                    <textarea form="send-game" name="code-text" 
+                        placeholder="C++ code of the game" wrap="soft"></textarea><br>
+                    <input name="code-file" type="file"><br>
+                </div>
+            </div>
+            <br>
+            Animation script:<br>
+            <div style="display: flex;">
+                <div>
+                    <textarea form="send-game" name="script-text" 
+                        placeholder="JS code of animation script" wrap="soft"/></textarea><br>
+                    <input name="script-file" type="file"><br>
+                </div>
+            </div>
+            <br>
+        <input id="upload" type="submit" value="Upload">
+    </form>
+
+
+
+<script>
+    $('#send-game').on('submit', e => {
+        console.log('CHUJ');
+        e.preventDefault();
+        var data = new FormData();
+        var codeFile = $('#send-game :input[name="' + 'code' + '-file"]')[0];
+        var codeText = $('#send-game :input[name="' + 'code' + '-text"]')[0];
+        if(codeFile.files[0]) {
+            data.append('code', codeFile.files[0]);
+        } else {
+            data.append('code', new Blob([codeText.value]));
+        }
+
+        var scriptFile = $('#send-game :input[name="' + 'script' + '-file"]')[0];
+        var scriptText = $('#send-game :input[name="' + 'script' + '-text"]')[0];
+        if(scriptFile.files[0]) {
+            data.append('script', scriptFile.files[0]);
+        } else {
+            data.append('script', new Blob([scriptText.value]));
+        }
+        
+        var title = $('#send-game :input[name="gameTitle"]')[0];
+        data.append('title', title.value);
+
+        data.append('username', "<%= user.userName %>");
+
+        fetch('/upload/upload-run', {
+            method: 'post',
+            body: data
+        })  .then(response => response.json())
+            .then(
+                response => {
+                    console.log(response);
+                }
+            )
+            .catch(console.error);
+    });
+
+</script>
