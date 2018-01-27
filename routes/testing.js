@@ -76,10 +76,11 @@ router.post('/upload-run', upload.fields([{name: 'code', maxCount: 1},
         var codePath = req.files.code[0].path;
         var scriptPath = req.files.script[0].path;
         var title=  req.body.title;
+        var username = req.body.username;
         uploadGame({
             codePath : codePath,
             scriptPath : scriptPath, 
-            username : 'Maro',
+            username : username,
             gamename : title,
             language : 'cpp'
         }).then( (result ) => {
