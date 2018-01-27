@@ -1,13 +1,13 @@
-<div class="game-viewer row" id="<%= id %>">
+<div class="game-viewer" id="<%= id %>">
     <div class="game-canvas">
-        <div class="row">
+        <div class="col-md-12">
             <canvas width="<%= canvasWidth %>" height="<%= canvasHeight %>"></canvas>
         </div>
-        <div class="game-navigator row">
+        <div class="game-navigator col-md-12">
             <div class="game-navigator-buttons col-md-6">
-                    <button class="btn btn-primary play-backward fa fa-backward"></button>
-                    <button class="btn btn-primary play fa fa-play"></button>
-                    <button class="btn btn-primary play-forward fa fa-forward"></button>
+                    <button class="btn btn-primary disabled play-backward fa fa-backward"></button>
+                    <button class="btn btn-primary disabled play fa fa-play"></button>
+                    <button class="btn btn-primary disabled play-forward fa fa-forward"></button>
             </div>
             <div class="game-current-turn text-left col-md-6"> </div>
         </div>

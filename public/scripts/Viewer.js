@@ -1,6 +1,5 @@
 function resetViewer(viewer) {
-    viewer.off('click', '*');
-    viewer.find('.game-navigator-buttons > .btn').removeClass('disabled');
+    viewer.find('.game-navigator-buttons > .btn').removeClass('disabled').off('click');
     updatePlayButton(viewer);
 }
 
@@ -43,7 +42,7 @@ function viewGame(viewerId, history) {
     });
     setCurrentUpdate(0);
 
-    viewer.on('click', '.play', () => {
+    viewer.find('.play').on('click', () => {
         if(isAnimationPlaying()) {
             stopAnimation();
         } else {
@@ -55,13 +54,13 @@ function viewGame(viewerId, history) {
         updatePlayButton(viewer);
     });
 
-    viewer.on('click', '.play-backward', () => {
+    viewer.find('.play-backward').on('click', () => {
         if(!isAnimationPlaying() && currentUpdate > 0) {
             setCurrentUpdate(currentUpdate - 1);
         }
     });
 
-    viewer.on('click', '.play-forward', () => {
+    viewer.find('.play-forward').on('click', () => {
         if(!isAnimationPlaying() && currentUpdate + 1 < history.updates.length) {
             setCurrentUpdate(currentUpdate + 1);
         }

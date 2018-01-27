@@ -107,4 +107,8 @@ function initCodeEditors(languages) {
             return new Blob([editor.find('.code-editor').data('value')]);
         }
     };
+
+    codeEditorLanguage = function(editorId) {
+        return $(`#${editorId} .dropdown`).data('value');
+    }
 }

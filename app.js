@@ -48,7 +48,8 @@ var routes = require('./routes/index')
     , login = require('./routes/login')
     , logout = require('./routes/logout')
     , testing = require('./routes/testing')
-    , upload = require('./routes/upload');
+    , upload = require('./routes/upload')
+    , submit = require('./routes/submit');
 
 // Routes
 app.use(express.static(path.join(__dirname, 'public')));
@@ -59,6 +60,7 @@ app.use('/logout', logout);
 app.use('/games', games);
 app.use('/testing', testing);
 app.use('/upload', upload);
+app.use('/submit', submit);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

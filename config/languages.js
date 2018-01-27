@@ -25,6 +25,7 @@ const config = {
 
     python: {
         name: 'Python 2',
+        build: 'python -m py_compile {code} && mv {code}c {exec}',
         run: 'python {exec}',
         ext: 'py',
         editor: 'python'
@@ -32,6 +33,7 @@ const config = {
 
     python3: {
         name: 'Python 3',
+        build: 'python3 -m py_compile {code} && mv {code}c {exec}',
         run: 'python3 {exec}',
         ext: 'py',
         editor: 'python'

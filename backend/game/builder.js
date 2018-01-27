@@ -52,21 +52,19 @@ function runCompiler(Sub, buildCommand, options) {
 
         function success(...args) {
             if(returned) return;
-            console.log("SUCCESS");
             returned = true;
             res(...args);
         }
 
         function failure(...args) {
             if(returned) return;
-            console.log("FAILURE");
             returned = true;
             rej(...args);        
         }
 
         function onExecFinish(error, stdout, stderr) {
             if (error) {
-                const message = "Compilation Error " + stderr;
+                const message = stderr;
                 failure(message);
             }
             else {
@@ -84,7 +82,6 @@ function runCompiler(Sub, buildCommand, options) {
 }
 
 async function build( Sub, options ) {
-    console.log('build', Sub);
     Sub = copy(Sub);
     options = Object.assign({}, defaultOptions, options);
     const directory = getDataDirectory(Sub);
@@ -117,7 +114,6 @@ async function build( Sub, options ) {
     runCommand = format(runCommand, {
         exec: execPath
     });
-    console.log('builded code from', codePath, 'into', execPath);
     return splitCommand(runCommand);
 }
 

@@ -25,7 +25,20 @@ router.get('/', auth.IsAuthenticated, function(req, res, next){
 router.get('/:gameId', auth.IsAuthenticated, function(req, res, next) {
     res.render('game.ejs', {
         user: req.user,
-        game: {},
+        game: {
+            id: 'tictactoe',
+            title: 'Game Title',
+            description: `
+                Some introduction to the game
+                <h4>Details</h4>
+                Some details about the game mechanics
+                <h4>Input</h4>
+                Description of the standard input
+                <h4>Output</h4>
+                Description of the standard output
+            `,
+            animation: '/gameScripts/tictactoe/script.js'
+        },
         languages: languages
     });
 })
