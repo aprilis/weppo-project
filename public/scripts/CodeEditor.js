@@ -1,28 +1,24 @@
 function initCodeEditors(languages) {
     //code from https://codepen.io/Sebus059/pen/MwMQbP
     (function bs_input_file() {
-        $(".input-file").before(
+        $(".input-file").each(
             function() {
-                if ( ! $(this).prev().hasClass('input-ghost') ) {
-                    var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0'>");
-                    element.attr("name",$(this).attr("name"));
-                    element.change(function(){
-                        element.next(element).find('input').val((element.val()).split('\\').pop());
-                    });
-                    $(this).find("button.btn-choose").click(function(){
-                        element.click();
-                    });
-                    $(this).find("button.btn-reset").click(function(){
-                        element.val(null);
-                        $(this).parents(".input-file").find('input').val('');
-                    });
-                    $(this).find('input').css("cursor","pointer");
-                    $(this).find('input').mousedown(function() {
-                        $(this).parents('.input-file').prev().click();
-                        return false;
-                    });
-                    return element;
-                }
+                var element = $(this).prev();
+                element.change(function(){
+                    element.next(element).find('input').val((element.val()).split('\\').pop());
+                });
+                $(this).find("button.btn-choose").click(function(){
+                    element.click();
+                });
+                $(this).find("button.btn-reset").click(function(){
+                    element.val(null);
+                    $(this).parents(".input-file").find('input').val('');
+                });
+                $(this).find('input').css("cursor","pointer");
+                $(this).find('input').mousedown(function() {
+                    $(this).parents('.input-file').prev().click();
+                    return false;
+                });
             }
         );
     })();
@@ -31,6 +27,7 @@ function initCodeEditors(languages) {
         var element = $(this).find('.code-editor');
         var editor = ace.edit(element[0]);
         var dropdown = $(this).find('.dropdown');
+        var file = $(this).find('input[type="file"]');
         function updateLanguage() {
             var lang = dropdown.data('value');
             editor.getSession().setMode('ace/mode/' + languages[lang].editorCode);
@@ -38,10 +35,52 @@ function initCodeEditors(languages) {
         function updateCode() {
             element.data('value', editor.getSession().getValue());
         }
+        var lastModified = 0;
+        function loadCodeFromFile() {
+            const f = file[0].files[0];
+            lastModified = f.lastModified;
+            const reader = new FileReader();
+            reader.onload = event => {
+                editor.getSession().setValue(event.target.result);
+                updateCode();
+            }
+            reader.readAsText(f);
+        }
+        function enableEditor() {
+            editor.setOptions({
+                readOnly: false,
+                highlightActiveLine: true,
+                highlightGutterLine: true
+            });
+            editor.container.style.opacity = 1;
+        }
+        function disableEdtior() {
+            editor.setOptions({
+                readOnly: true,
+                highlightActiveLine: false,
+                highlightGutterLine: false
+            });
+            editor.container.style.opacity = 0.5;
+        }
         updateLanguage();
         updateCode();
         dropdown.on('change', updateLanguage);
         editor.getSession().on('change', updateCode);
+        $(this).find('button.btn-reset').click(enableEditor);
+        file.change(() => {
+            disableEdtior();
+            loadCodeFromFile();
+        });
+        if(file.val()) {
+            disableEdtior();
+            loadCodeFromFile();
+        }
+
+        setInterval(() => {
+            if(file[0].files[0] && file[0].files[0].lastModified > lastModified) {
+                loadCodeFromFile();
+            }
+        }, 2000);
     });
 
     //returns promise to the contents of file
