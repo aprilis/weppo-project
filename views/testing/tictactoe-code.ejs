@@ -23,16 +23,6 @@
         border: 1px solid gray;
     }
 </style>
-<% languages = {
-    cpp: {
-        name: 'C++',
-        editorCode: 'c_cpp'
-    },
-    python: {
-        name: 'Python',
-        editorCode: 'python'
-    }
-} %>
 <div class="row">
     <div class="col-md-6">
         <%- include('../partials/code-editor', {
@@ -114,11 +104,5 @@
     }
 </script>
 
-<script src="/scripts/DropDown.js"></script>
-<script src="/scripts/CodeEditor.js"></script>
-<script>
-    const languages = <%- JSON.stringify(languages) %>;
-    initCodeEditors(languages);
-</script>
-
+<%- include('../partials/code-editor-init.ejs') %>
 <%- include('../partials/end.ejs') %>

@@ -7,6 +7,7 @@ const { build } = require('../backend/game/builder');
 const router = express.Router();
 const upload = multer({ dest: 'data/code' });
 const {uploadGame} = require('../backend/game/gameUploader');
+const languages = require('../config/languages');
 
 const fs= require('fs');
 
@@ -19,7 +20,7 @@ router.get('/tictactoe', (req, res) => {
 });
 
 router.get('/tictactoe-code', (req, res) => {
-    res.render('testing/tictactoe-code');
+    res.render('testing/tictactoe-code', { languages: languages });
 });
 
 router.get('/run-tictactoe', (req, res) => {

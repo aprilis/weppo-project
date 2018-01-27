@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const childProcess = require('child_process');
 const format = require('string-format');
-const config = require('../../config/builder');
+const config = require('../../config/languages');
 
 const dataPath = 'data/builds';
 

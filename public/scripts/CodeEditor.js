@@ -26,11 +26,12 @@ function initCodeEditors(languages) {
     $('.code-editor-container').each(function() {
         var element = $(this).find('.code-editor');
         var editor = ace.edit(element[0]);
+        editor.$blockScrolling = Infinity;
         var dropdown = $(this).find('.dropdown');
         var file = $(this).find('input[type="file"]');
         function updateLanguage() {
             var lang = dropdown.data('value');
-            editor.getSession().setMode('ace/mode/' + languages[lang].editorCode);
+            editor.getSession().setMode('ace/mode/' + languages[lang].editor);
         }
         function updateCode() {
             element.data('value', editor.getSession().getValue());
@@ -48,17 +49,13 @@ function initCodeEditors(languages) {
         }
         function enableEditor() {
             editor.setOptions({
-                readOnly: false,
-                highlightActiveLine: true,
-                highlightGutterLine: true
+                readOnly: false
             });
             editor.container.style.opacity = 1;
         }
         function disableEdtior() {
             editor.setOptions({
-                readOnly: true,
-                highlightActiveLine: false,
-                highlightGutterLine: false
+                readOnly: true
             });
             editor.container.style.opacity = 0.5;
         }
