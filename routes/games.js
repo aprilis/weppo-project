@@ -2,14 +2,23 @@ var express = require('express')
 , router = express.Router()
 , auth = require('../libs/auth');
 
+var Game = require('../models/Game');
+
+
 /**
  * GET: Redirect Homepage to login page.
  * */
-router.get('/', auth.IsAuthenticated, function(req, res, next){
-    res.render('games.ejs',
+async function renderGames(res, req) {
+    var g= await Game.getAllPromise();
+    res.render('games.ejs', 
     {
-        user: req.user
+        user : req.user,
+        games : g
     });
+}
+
+router.get('/', auth.IsAuthenticated, function(req, res, next){
+    renderGames(res, req);
 });
 
 router.get('/tictactoe', auth.IsAuthenticated, function(req, res, next){
