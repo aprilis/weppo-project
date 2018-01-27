@@ -50,6 +50,10 @@ router.get('/viewer', (req, res) => {
     res.render('testing/viewer.ejs');
 });
 
+router.get('/bootstrap', (req, res) => {
+    res.render('testing/bootstrap.ejs');
+});
+
 /*
  Submission format 
     {
