@@ -75,7 +75,7 @@ Complete requested fields and click submit to upload your new game !
 
         data.append('username', "<%= user.userName %>");
 
-        fetch('/testing/upload-run', {
+        fetch('/upload/upload-run', {
             method: 'post',
             body: data
         })  .then(response => response.json())
