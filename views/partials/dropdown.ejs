@@ -1,0 +1,13 @@
+<div class="dropdown" data-value="<%= defaultOption %>">
+    <button class="btn btn-default dropdown-toggle"
+            type="button"
+            data-toggle="dropdown">
+        <%= options[defaultOption] %>
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <% for(var key in options) { %>
+            <li><a data-value='<%= key %>'> <%= options[key] %> </a> </li>
+        <% } %>
+    </ul>
+</div>

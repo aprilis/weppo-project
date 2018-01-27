@@ -102,6 +102,7 @@ int main(int argc, char *argv[]) {
         inputs[i] = fdopen(2 * i + 1 + 3, "r");
     }
     board b;
+    update(b, false);
     int moves = 0;
     while(true) {
         for(int p = 0; p < 2; p++) {
@@ -117,7 +118,7 @@ int main(int argc, char *argv[]) {
             myAssert(end == string("END"),                          p, "Missing END token");
             myAssert(b.set(x, y, p),                                p, "Selected field that was not empty");
             cerr << "finished" << endl;
-            update(b, p == 1);
+            update(b, p == 0);
             if(b.checkLine() == p)
                 finish(1 - p);
             if(++moves == 9)

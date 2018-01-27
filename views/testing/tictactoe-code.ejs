@@ -23,36 +23,31 @@
         border: 1px solid gray;
     }
 </style>
-<form id="send-code" method="post" enctype="multipart/form-data">
-    <div style="display: flex;">
-        <div>
-            <textarea form="send-code" name="code1-text" 
-                placeholder="C++ code of the first bot" wrap="soft"></textarea><br>
-            <input name="code1-file" type="file"><br>
-        </div>
-        <div>
-            <textarea form="send-code" name="code2-text" 
-                placeholder="C++ code of the second bot" wrap="soft"/></textarea><br>
-            <input name="code2-file" type="file"><br>
-        </div>
-    </div>
-    <br>
-    <input type="submit" value="Fight!">
-</form>
-<%- include('../partials/code-editor', {
-    editorId: 'editor',
-    languages: {
-        cpp: {
-            name: 'C++',
-            editorCode: 'c_cpp'
-        },
-        python: {
-            name: 'Python',
-            editorCode: 'python'
-        }
+<% languages = {
+    cpp: {
+        name: 'C++',
+        editorCode: 'c_cpp'
     },
-    defaultLanguage: 'cpp'
-}) %>
+    python: {
+        name: 'Python',
+        editorCode: 'python'
+    }
+} %>
+<div class="row">
+    <div class="col-md-6">
+        <%- include('../partials/code-editor', {
+            editorId: 'code1',
+            defaultLanguage: 'cpp'
+        }) %>
+    </div>
+    <div class="col-md-6">
+        <%- include('../partials/code-editor', {
+            editorId: 'code2',
+            defaultLanguage: 'cpp'
+        }) %>
+    </div>
+</div>
+<button class="btn btn-primary" id="fight">Fight!</button>
 <div id="arena">
     <div id="loading">
         Ładowanie...
@@ -64,20 +59,14 @@
 <script>
     $('#animation').hide();
     $('#arena').hide();
-    $('#send-code').on('submit', e => {
+    $('#fight').on('click', () => {
         $('#arena').show();
         $('#send-code').hide();
-        e.preventDefault();
         var data = new FormData();
-        for(var id of ['code1', 'code2']) {
-            var codeFile = $('#send-code :input[name="' + id + '-file"]')[0];
-            var codeText = $('#send-code :input[name="' + id + '-text"]')[0];
-            if(codeFile.files[0]) {
-                data.append(id, codeFile.files[0]);
-            } else {
-                data.append(id, new Blob([codeText.value]));
-            }
-        }
+        ['code1', 'code2'].forEach(id => {
+            codeEditorText(id).then(console.log);
+            data.append(id, codeEditorFile(id));
+        });
         fetch('/testing/run-tictactoe-code', {
             method: 'post',
             body: data
@@ -123,6 +112,13 @@
 
         setInterval(foo, 1000);
     }
+</script>
+
+<script src="/scripts/DropDown.js"></script>
+<script src="/scripts/CodeEditor.js"></script>
+<script>
+    const languages = <%- JSON.stringify(languages) %>;
+    initCodeEditors(languages);
 </script>
 
 <%- include('../partials/end.ejs') %>

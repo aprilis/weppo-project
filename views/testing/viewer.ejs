@@ -1,33 +1,44 @@
 <%- include('../partials/head.ejs', { title: 'Testowanie' }) %>
 <%- include('../partials/alert.ejs') %>
 
-<%- include('../partials/viewer.ejs', {id: 'viewer', canvasWidth: 600, canvasHeight: 400}) %>
+<div class="row">
+    <div class="col-md-6">
+        <%- include('../partials/viewer.ejs', {id: 'viewer', canvasWidth: 540, canvasHeight: 300}) %>
+    </div>
+    <div class="col-md-6"></div>
+</div>
 
 <script src="/API/AnimationAPI.js"></script>
-<script src="/API/Viewer.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.22/fabric.min.js"></script>
+<script src="/scripts/Viewer.js"></script>
+<script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
+<script src="https://code.createjs.com/tweenjs-0.6.2.min.js"></script>
 <script>
-    const fc = new fabric.Canvas(getCanvasElement());
-    function disableSelection() {
-        fc.forEachObject(o => o.selectable = false);
+    const root = new createjs.Stage(getCanvasElement());
+    const stage = new createjs.Container();
+    root.addChild(stage);
+    const size = 100;
+    stage.x = (getCanvasWidth() - size * 3) / 2;
+    
+    function makeLine(x1, y1, x2, y2) {
+        const line = new createjs.Shape();
+        line.graphics
+            .setStrokeStyle(5)
+            .beginStroke('gray')
+            .moveTo(x1, y1)
+            .lineTo(x2, y2);
+        stage.addChild(line);
     }
 
-    fc.selection = false;
+    function centerReg(obj) {
+        const bounds = obj.getBounds();
+        obj.regX = bounds.width / 2;
+        obj.regY = bounds.height / 2;
+    }
 
-    const size = 100;
-    
     //grid
     [size, size * 2].forEach(x => {
-        fc.add(new fabric.Line([x, 0, x, size * 3], {
-            fill: 'gray',
-            stroke: 'gray',
-            strokeWidth: 5,
-        }));
-        fc.add(new fabric.Line([0, x, size * 3, x], {
-            fill: 'gray',
-            stroke: 'gray',
-            strokeWidth: 5,
-        }));
+        makeLine(x, 0, x, size * 3);
+        makeLine(0, x, size * 3, x);
     });
 
     circles = [];
@@ -38,41 +49,35 @@
         circles[i] = [];
         crosses[i] = [];
         for(var j = 0; j < 3; j++) {
-            var options = {
-                fontSize: size * 0.7,
-                fontFamily: 'arial',
-                fill: 'black',
-                stroke: null,
-                originX: 'center',
-                originY: 'center',
-                scaleX: 0,
-                scaleY: 0,
-                left: size * (i + 0.5),
-                top: size * (j + 0.5)
-            };
-            circles[i][j] = new fabric.Text('O', options);
-            crosses[i][j] = new fabric.Text('X', options);
-            fc.add(circles[i][j], crosses[i][j]);
+            const cross = new createjs.Text('X', '70px Arial', 'black');
+            cross.x = (i + 0.5) * size;
+            cross.y = (j + 0.5) * size;
+            centerReg(cross);
+            cross.alpha = 0;
+            crosses[i][j] = cross;
+            stage.addChild(cross);
+
+            const circle = new createjs.Text('O', '70px Arial', 'black');
+            circle.x = (i + 0.5) * size;
+            circle.y = (j + 0.5) * size;
+            centerReg(circle);
+            circle.alpha = 0;
+            circles[i][j] = circle;
+            stage.addChild(circle);
         }
     }
-
-    disableSelection();
-
 
     function initAnimation(history) {
         setAnimationSpeed(1000);
     }
 
     function animate(object, target) {
-        if(object.scaleX == target) {
+        if(object.alpha == target) {
             return;
         }
-        object.animate('scaleX', target, {
-            onChange: fc.renderAll.bind(fc)
-        });
-        object.animate('scaleY', target, {
-            onChange: fc.renderAll.bind(fc)
-        });
+        createjs.Tween.get(object).to({
+            alpha: target,
+        }, 800, createjs.Ease.getPowInOut(4));
     }
 
     function drawFrame(data) {
@@ -85,6 +90,10 @@
             }
         }
     }
+
+    root.update();
+    createjs.Ticker.setFPS(60);
+    createjs.Ticker.addEventListener("tick", root);
 </script>
 <script>
     fetch('/testing/run-tictactoe')

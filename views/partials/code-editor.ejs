@@ -1,31 +1,35 @@
+<!-- requires /scripts/CodeEditor.js -->
 <div class="code-editor-container" id='<%= editorId %>'>
-    <select class="language-select">
-        <% for(var key in languages) { %>
-            <option value='<%= key %>'
-                <% if(key == defaultLanguage) { %>
-                    selected
-                <%} %> > <%= languages[key].name %> </option>
-        <% } %>
-    </select>
-    <div class="code-editor"></div>
-    <script>
-        (function() {
-            var id = '<%= editorId %>';
-            var languages = <%- JSON.stringify(languages) %>;
-            var element = $('#' + id + ' .code-editor');
-            var editor = ace.edit(element[0]);
-            var select = $('#' + id + ' .language-select');
-            function updateLanguage() {
-                var lang = select[0].value;
-                editor.getSession().setMode('ace/mode/' + languages[lang].editorCode);
-            }
-            function updateCode() {
-                element.val(editor.getSession().getValue());
-            }
-            updateLanguage();
-            updateCode();
-            select.on('change', updateLanguage);
-            editor.getSession().on('change', updateCode);
-        })();
-    </script>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="h5 text-right">Your favourite language:</div>
+        </div>
+        <div class="col-md-6">
+            <%- include('dropdown.ejs', {
+                defaultOption: defaultLanguage,
+                options: (function() {
+                    const options = {};
+                    for(var key in languages) {
+                        options[key] = languages[key].name;
+                    }
+                    return options;
+                })()
+            }) %>
+        </div>
+    </div>
+    <div class="row">
+        <div class="code-editor row"></div>
+    </div>
+    <!-- from https://codepen.io/Sebus059/pen/MwMQbP -->
+    <div class="form-group">
+		<div class="input-group input-file">
+			<span class="input-group-btn">
+        		<button class="btn btn-default btn-choose" type="button">You can also send file!</button>
+    		</span>
+    		<input type="text" class="form-control" placeholder='Choose a file...' />
+    		<span class="input-group-btn">
+       			 <button class="btn btn-warning btn-reset" type="button">Reset</button>
+    		</span>
+		</div>
+	</div>
 </div>
