@@ -33,6 +33,15 @@ GameSchema.statics.existsPromise = function (id, owner) {
     });
 };
 
+GameSchema.statics.getGameByIDPromise = function (id) {
+    return new Promise( (res, rej ) => {
+        this.findOne({gameID : id}, (err, game) => {
+            if (err) rej(err);
+            res(game);
+        });
+    });
+};
+
 GameSchema.statics.getAllPromise = function () {
     return new Promise( 
         (res, rej ) => {

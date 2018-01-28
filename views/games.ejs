@@ -13,7 +13,7 @@
 <% for (var game of games) { %>
 <div class="row">
     <div class="col col-sm-4 col-md-6 col-lg-6"><strong><%= game.name %> </strong></div>
-    <div class="col col-sm-8 col-md-6 col-lg-6"> <a href="/games/tictactoe">Get in</a></div>
+    <div class="col col-sm-8 col-md-6 col-lg-6"> <a href="/games/<%= game.gameID %>">Get in</a></div>
 </div>
 <% } %>
 

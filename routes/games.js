@@ -23,10 +23,19 @@ router.get('/', auth.IsAuthenticated, function(req, res, next){
 });
 
 router.get('/:gameId', auth.IsAuthenticated, function(req, res, next) {
-    res.render('game.ejs', {
+    Game.getGameByIDPromise(req.params.gameId)
+        .then( (game ) => {
+            res.render('game.ejs', {
+                game : game,
+                user : req.user,
+                languages : languages
+            });
+        }
+    ).catch(console.error);
+   /* res.render('game.ejs', {
         user: req.user,
         game: {
-            id: 'tictactoe',
+            id: req.params.gameId,
             title: 'Game Title',
             description: `
                 Some introduction to the game
@@ -40,7 +49,7 @@ router.get('/:gameId', auth.IsAuthenticated, function(req, res, next) {
             animation: '/gameScripts/tictactoe/script.js'
         },
         languages: languages
-    });
+    }); */
 })
 
 console.log('Games arena');

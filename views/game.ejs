@@ -1,4 +1,4 @@
-<%- include('partials/head.ejs', { title: game.title }) %>
+<%- include('partials/head.ejs', { title: game.name }) %>
 <%- include('partials/alert.ejs') %>
 <%- include('partials/menu.ejs', {userName : user.userName}) %>
 
@@ -10,7 +10,7 @@
 <div class="row" style="height: 20px"></div>
 <div class="tab-content">
     <div id="desc" class="tab-pane fade in">
-        <div class="h2 text-center"> <%= game.title %> </div>
+        <div class="h2 text-center"> <%= game.name %> </div>
         <div>
             <%- game.description %>
         </div>
@@ -76,7 +76,7 @@
 <script>
     $('#quick-fight-button').click(function() {
         const data = new FormData();
-        data.append('game', '<%= game.id %>');
+        data.append('game', '<%= game.gameID %>');
         data.append('code', codeEditorFile('editor'));
         data.append('language', codeEditorLanguage('editor'));
         $(this).addClass('disabled');
@@ -122,6 +122,6 @@
     });
 </script>
 
-<%- include('partials/viewer-init.ejs', { gameScript: game.animation }) %>
+<%- include('partials/viewer-init.ejs', { gameScript: game.script }) %>
 <%- include('partials/code-editor-init.ejs') %>
 <%- include('partials/end.ejs') %>
