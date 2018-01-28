@@ -65,7 +65,6 @@ async function runGame(game, bots, options) {
         results: null,
         inputs: bots.map(b => path.join(directory, 'input' + b.nr)),
         outputs: bots.map(b => path.join(directory, 'output' + b.nr)),
-        errs: bots.map(b => path.join(directory, 'stderr' + b.nr)),
         history: historyPath
     };
 
@@ -88,7 +87,6 @@ async function runGame(game, bots, options) {
         b.process = childProcess.spawn(b.command, b.args);
         b.input = game.process.stdio[2 * b.nr + 3];
         b.output = b.process.stdout;
-        b.stderr = fs.createWriteStream(object.errs[b.nr]);
 
         b.input.pipe(b.process.stdin, { end: true });
         b.input.pipe(fs.createWriteStream(object.inputs[b.nr]));
@@ -100,8 +98,6 @@ async function runGame(game, bots, options) {
         b.process.stdout.on('error', console.error);
         game.process.stdio[2 * b.nr + 3].on('error', console.error);
         game.process.stdio[2 * b.nr + 1 + 3].on('error', console.error);
-
-        b.process.stderr.pipe(b.stderr);
 
         monitors.push(monitorBotTimeout(b, options.timeLimit, monitors.length));
 

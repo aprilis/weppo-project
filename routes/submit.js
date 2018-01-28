@@ -47,14 +47,12 @@ router.post('/quick-fight', auth.IsAuthenticated, upload.single('code'), (req, r
             fs.readJson(result.history),
             fs.readFile(result.inputs[0], 'utf8'),
             fs.readFile(result.outputs[0], 'utf8'),
-            fs.readFile(result.errs[0], 'utf8')
         ]);
         res.send({
             success: true,
             history: history,
             stdin: stdin,
-            stdout: stdout,
-            stderr: stderr
+            stdout: stdout
         });
     })().catch(e => {
         console.error(e);
