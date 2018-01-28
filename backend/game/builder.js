@@ -5,6 +5,7 @@ const childProcess = require('child_process');
 const format = require('string-format');
 const config = require('../../config/languages');
 const language = require('../util/language');
+const { copy } = require('../util/misc');
 
 const dataPath = 'data/builds';
 
@@ -27,10 +28,6 @@ const defaultOptions = {
 
 function getDataDirectory ( Sub ) {
     return path.resolve(dataPath, Sub.gameID,  Sub.type, Sub.username, uniqid());
-}
-
-function copy(o) {
-    return Object.assign({}, o);
 }
 
 function splitCommand(command) {

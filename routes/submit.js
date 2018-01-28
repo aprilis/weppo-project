@@ -6,9 +6,12 @@ const languages = require('../config/languages');
 const { runGame } = require('../backend/game/runner');
 const { build } = require('../backend/game/builder');
 
+const _ = require('underscore');
 const fs = require('fs-extra');
 const multer = require('multer');
 const upload = multer({ dest: 'data/code' });
+
+const Game = require('../models/Game');
 
 router.post('/quick-fight', auth.IsAuthenticated, upload.single('code'), (req, res) => {
     console.log(req.file, req.body);
@@ -35,32 +38,16 @@ router.post('/quick-fight', auth.IsAuthenticated, upload.single('code'), (req, r
         }
 
         //TODO
-        const bot2 = {
-            command: 'games/tictactoe/bot',
-            args: []
-        };
-        const game = {
-            command: 'games/tictactoe/game',
-            args: []
-        };
+        const game = await Game.getGameByIDPromise(req.body.game);
+        const bot2 = _(game.bots).find(b => b.id == req.body.opponent);
+        console.log(game, bot2, game.args);
 
-        try {
-            const result = await runGame(game, [bot1, bot2]);
-            const history = await fs.readJson(result.history);
-            res.send({
-                success: true,
-                history: history
-            });
-        } catch(e) {
-            console.error(e);
-            res.send({
-                success: false,
-                error: {
-                    title: 'Internal Server Error',
-                    message: e.toString()
-                }
-            });
-        }
+        const result = await runGame(game, [bot1, bot2]);
+        const history = await fs.readJson(result.history);
+        res.send({
+            success: true,
+            history: history
+        });
     })().catch(e => {
         console.error(e);
         res.send({

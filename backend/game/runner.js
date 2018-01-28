@@ -50,8 +50,8 @@ async function monitorBotTimeout(bot, timeout, result) {
 }
 
 async function runGame(game, bots, options) {
-    game = copy(game);
-    bots = bots.map(copy);
+    game = _.clone(game);
+    bots = bots.map(_.clone);
     options = Object.assign({}, defaultOptions, options);
 
     bots.forEach((b, i) => b.nr = i);
