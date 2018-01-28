@@ -35,26 +35,38 @@ function initialize(io) {
     
             // get database messages here
             var messages = await Message.getAllPromise(room);
+            var messagesToSend = {};
+            messages.forEach(message => {
+                var msg = {
+                    user: message.userName,
+                    message: message.message,
+                    created_at: message.created_at
+                }
+                messagesToSend.push(msg);
+            });
     
-            client.socket.emit('authentication', messages);
+            client.socket.emit('authentication', messagesToSend);
             updateUserNames(room);
         })
     
         // Send message
         socket.on('message', function(message) {
             if(authenticated) {
+                var time = new Date();
+                
                 // Add to database
                 var newMessage = new Message({
                     userName: socket.request.user.userName,
                     message: message,
                     room: room,
-                    created_at: Date.now()
+                    created_at: time.now
                 });
-        
+
                 newMessage.save().catch(console.error);
                 io.to(room).emit('message', {
                     user: socket.request.user.userName,
-                    message: message
+                    message: message,
+                    created_at: time.toISOString()
                 });
             }
         });
