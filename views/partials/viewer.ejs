@@ -1,15 +1,55 @@
 <div class="game-viewer" id="<%= id %>">
     <div class="game-canvas">
-        <div class="col-md-12">
+        <div class="col-md-12 game-canvas-container">
             <canvas width="<%= canvasWidth %>" height="<%= canvasHeight %>"></canvas>
         </div>
         <div class="game-navigator col-md-12">
-            <div class="game-navigator-buttons col-md-6">
-                    <button class="btn btn-primary disabled play-backward fa fa-backward"></button>
-                    <button class="btn btn-primary disabled play fa fa-play"></button>
-                    <button class="btn btn-primary disabled play-forward fa fa-forward"></button>
+            <div class="game-navigator-buttons col-md-4">
+                    <button
+                        class="with-tooltip btn btn-default disabled play-backward fa fa-backward"
+                        data-placement="bottom"
+                        title="Previous turn">
+                    </button>
+                    <button
+                        class="with-tooltip btn btn-default disabled play fa fa-play"
+                        data-placement="bottom"
+                        title="Play/pause">
+                    </button>
+                    <button
+                        class="with-tooltip btn btn-default disabled play-forward fa fa-forward"
+                        data-placement="bottom"
+                        title="Next turn">
+                    </button>
             </div>
-            <div class="game-current-turn text-left col-md-6"> </div>
+            <div class="game-current-turn disabled text-center col-md-6">
+                Current turn: 
+                <span class="game-current-turn-number"></span>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1">
+                <button
+                    class="with-tooltip btn disabled fa fa-ellipsis-v"
+                    data-target="#<%= id + '-streams' %>"
+                    data-toggle="collapse"
+                    data-placement="bottom"
+                    title="Toggle stdin/stdout preview">
+                </button>
+            </div>
         </div>
+    </div>
+    <div id="<%= id + '-streams' %>" class="game-streams-viewer collapse col-md-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Input</th>
+                    <th>Output</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td type="stdin"><pre class="pre-scrollable"></pre></td>
+                    <td type="stdout"><pre class="pre-scrollable"></pre></td>
+                </tr>
+        </table>
     </div>
 </div>

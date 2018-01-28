@@ -93,7 +93,7 @@
         .then(response => response.json())
         .then(response => {
             if(response.success) {
-                viewGame('viewer', response.history);
+                viewGame('viewer', response);
             } else {
                 $('#modal-error .modal-title').text(response.error.title);
                 $('#modal-error .modal-body').text(response.error.message);
@@ -126,7 +126,10 @@
     });
 </script>
 
+<<<<<<< HEAD
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+=======
+>>>>>>> dacb2f017ac67740a279e4ed1fec073f3ba0b91b
 <script src="/socket.io/socket.io.js"></script>
 <script src="/scripts/SocketIOChat.js"></script>
 <script> socket = initSocketIO('<%= game.gameID %>', '<%= user.userName %>'); </script>
