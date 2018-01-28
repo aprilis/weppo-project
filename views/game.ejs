@@ -93,7 +93,7 @@
         .then(response => response.json())
         .then(response => {
             if(response.success) {
-                viewGame('viewer', response.history);
+                viewGame('viewer', response);
             } else {
                 $('#modal-error .modal-title').text(response.error.title);
                 $('#modal-error .modal-body').text(response.error.message);

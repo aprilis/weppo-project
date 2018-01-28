@@ -45,3 +45,7 @@ canvas {
     color: #5a5a5a;
     background: #ececec;
 }
+
+.game-viewer pre {
+    height: 80px;
+}
