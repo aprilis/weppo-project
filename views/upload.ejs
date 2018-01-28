@@ -1,7 +1,6 @@
 <%- include('partials/head.ejs', { title: 'Upload Game' }) %>
+<%- include('partials/auto-menu.ejs') %>
 <%- include('partials/alert.ejs') %>
-<%- include('partials/menu.ejs', {userName : user.userName}) %>
-
 
 <script src="/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 
@@ -11,8 +10,6 @@
         min-height: 300px;
     }
 </style>
-
-
 
 <div class="h4 text-center"> Complete requested fields and upload your own game ! </div>
 

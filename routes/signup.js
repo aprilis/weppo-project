@@ -7,8 +7,10 @@ var express = require('express')
  * */
 router.get('/',
     function(req, res, next) {
-        res.render('signup.ejs');
-    });
+        res.render('signup.ejs', {
+            user: req.user
+        });
+});
 
 /**
  * POST: register
@@ -16,7 +18,7 @@ router.get('/',
 router.post('/',
     function(req, res, next) {
         passport.authenticate('local-register', {
-            successRedirect: '/games',
+            successRedirect: '/',
             failureRedirect: '/signup',
             failureFlash : true,
             badRequestMessage: 'All fields are required.'

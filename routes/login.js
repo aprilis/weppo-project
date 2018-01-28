@@ -6,7 +6,13 @@ var express = require('express')
  * GET login
   */
 router.get('/', function(req, res, next) {
-    res.render('login.ejs');
+    if(req.isAuthenticated()) {
+        res.redirect('/');
+    } else {
+        res.render('login.ejs', {
+            user: req.user
+        });
+    }
 });
 
 /**
@@ -19,7 +25,6 @@ router.post('/', function(req, res, next) {
         failureFlash : true
     })(req, res, next)
 });
-
 
 console.log('login loaded');
 

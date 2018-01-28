@@ -5,14 +5,12 @@ const languages = require('../config/languages');
 
 var Game = require('../models/Game');
 
-
 /**
  * GET: Redirect Homepage to login page.
  * */
 async function renderGames(res, req) {
-    var g= await Game.getAllPromise();
-    res.render('games.ejs', 
-    {
+    var g = await Game.getAllPromise();
+    res.render('games.ejs', {
         user : req.user,
         games : g
     });
