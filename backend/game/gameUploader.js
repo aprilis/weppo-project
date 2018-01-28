@@ -110,7 +110,7 @@ async function uploadGame(Sub, options) {
     console.log("EXIST", exist);
     if (exist == true) {
         console.log("SHIT");
-        return ({error :"game of the given name already exists"});
+        return ({err :"game of the given name already exists"});
     }
     options = Object.assign({}, defaultOptions, options);    
     const codeDirectory = getCodeDirectory(Sub);
