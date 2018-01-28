@@ -10,7 +10,8 @@ router.get('/', function(req, res, next) {
         res.redirect('/');
     } else {
         res.render('login.ejs', {
-            user: req.user
+            user: req.user,
+            next: req.query.next
         });
     }
 });
@@ -20,7 +21,7 @@ router.get('/', function(req, res, next) {
  */
 router.post('/', function(req, res, next) {
     passport.authenticate('local-login', {
-        successRedirect: '/games',
+        successRedirect: req.body.redirect || '/',
         failureRedirect: '/login',
         failureFlash : true
     })(req, res, next)
