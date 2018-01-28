@@ -17,11 +17,11 @@ const defaultOptions = {
  Submissson
  {
      type : game/bot
-     code : string
+     code : string (optional)
      codePath : string (optional)
      username : string
-     gamename : string
-     language : string
+     gameID : string
+     language : string (optional if can be autodetected by file extension)
  }
  */
 
@@ -83,6 +83,7 @@ function runCompiler(Sub, buildCommand, options) {
 }
 
 async function build( Sub, options ) {
+    console.log('building', Sub);
     Sub = copy(Sub);
     options = Object.assign({}, defaultOptions, options);
     const directory = getDataDirectory(Sub);

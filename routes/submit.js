@@ -19,10 +19,11 @@ router.post('/quick-fight', auth.IsAuthenticated, upload.single('code'), (req, r
                 type: 'bot',
                 codePath: req.file.path,
                 username: req.user.userName,
-                gamename: req.body.game,
+                gameID: req.body.game,
                 language: req.body.language
             });
         } catch(e) {
+            console.log(e);
             res.send({
                 success: false,
                 error: {
@@ -51,6 +52,7 @@ router.post('/quick-fight', auth.IsAuthenticated, upload.single('code'), (req, r
                 history: history
             });
         } catch(e) {
+            console.error(e);
             res.send({
                 success: false,
                 error: {
@@ -60,6 +62,7 @@ router.post('/quick-fight', auth.IsAuthenticated, upload.single('code'), (req, r
             });
         }
     })().catch(e => {
+        console.error(e);
         res.send({
             success: false,
             error: {
