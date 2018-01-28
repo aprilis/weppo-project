@@ -51,11 +51,15 @@ function handleArchivePromise(archivePath, language) {
             if (validArch.err ) rej(validArch.err);
             var gamePathNew = path.join(libPath, gameExtension(language));
             fs.copySync(gamePath, gamePathNew);
-
+            var botFiles = fs.readdirSync(botsPath);
+            var bots = [];
+            for (bot of botFiles) {
+                bots.push(path.join(botsPath, bot));
+            }
             res({
                 codePath : gamePathNew,
                 scriptPath : animationPath,
-                bots : fs.readdirSync(botsPath),
+                bots : bots,
                 language : language,
                 description : fs.readFileSync(descPath).toString()
             });

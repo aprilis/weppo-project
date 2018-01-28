@@ -59,6 +59,21 @@ async function buildGame(Sub) {
     return game;
 }
 
+async function buildBots(Sub) {
+    var bots = [];
+    for (botSrc of Sub.bots) {
+        var bot = await build({
+            type : 'bot',
+            codePath : botSrc,
+            gamename : Sub.gamename,
+            username : Sub.username,
+            language : Sub.language 
+        });
+        bots.push(bot);
+    }
+    return bots;
+}
+
 
 async function gameExists (Sub) {
     console.log("checking ", Sub.gamename);
@@ -107,7 +122,7 @@ async function uploadGame(Sub, options) {
     try {
         var game = await buildGame(Sub);
         game.gameID = Sub.gameID;
-        game.bots = Sub.bots;
+        game.bots = await buildBots(Sub);
         game.description = Sub.description;
     }
     catch(e) {
