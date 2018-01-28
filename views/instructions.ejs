@@ -1,0 +1,100 @@
+<%- include('partials/head.ejs', { title: "Instructions" }) %>
+<%- include('partials/auto-menu.ejs') %>
+<%- include('partials/alert.ejs') %>
+
+<div id="intro">
+            The idea of the platform is to create games that allow players to write bots that 
+            read the game state description from standard input and print their moves to standard 
+            output. <br>
+            We would like to help you understand our platform mechanisms as well as possible.
+            You can find detailed information about uploading your bots and your own games below.
+
+</div>
+
+<div id="bots">
+    <h2>Uploading bots</h2>
+    It is pretty straightforward. You just need to followe these steps:
+    <ul>
+        <li>Enter one of the games from the list.</li>
+        <li>Upload your bot's code. You can either paste it 
+            directly to the editor or upload the file from you computer.
+        </li>
+        <li>Select the bot you want to fight with.</li>
+        <li>Click the Fight button and wait for the results.</li>
+    </ul>
+</div>
+
+<div id="games">
+    <h2>Uploading games</h2>
+    That part is a little bit more complicated. To upload the game you need give us:
+    <ul>
+        <li><strong>game ID</strong> - it has to be unique!</li>
+        <li><strong>game title.</strong></li>
+        <li><strong>archive</strong> - we will describe it precisely below.</li>
+        <li><strong>game language.</strong></li>
+    </ul>
+    <h4><strong>Archive</strong></h4>
+    This is the hardest part. You need to be very careful, because everything must be 
+    done exactly the way we demand it.
+    Then the structure of the archive must be following:
+    <ul>
+        <li>
+            <strong>Archive.zip</strong>
+            <ul>
+                <li>
+                    <strong>game.ext</strong> - main part of your game. We will discuss it later
+                </li>
+                <li>
+                    <strong>lib (directory) </strong> 
+                </li>
+                <li>
+                    <strong>bots (directory)</strong>
+                </li>
+                <li>
+                    <strong>animation.js</strong> - this script will be responsible for 
+                    showing the results of the game. We will discuss this file more precisely later.
+                </li>
+                <li>
+                    <strong>description.html</strong> 
+                </li>
+                <li>
+                    <strong> bots.json (optional)</strong>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    where .ext is the extension of the language you have chosen.<br><br>
+    Let's discuss each part more precisely.
+    <h5><strong>game.ext</strong></h5>
+    Basically it is a game manager. The main tasks of it are:
+    <ul>
+        <li>Sending the description of the turn to bots.</li>
+        <li>Reveiving information from bots about their moves.</li>
+        <li>Updating the state of the game and validating bots' moves.</li>
+        <li>Printing information about update in JSON format. Don't worry, we will handle the rest</li>
+    </ul>
+    
+    <h5><strong>lib</strong></h5>
+    Here you can put all .ext modules your game.ext uses.
+    <h5><strong>bots</strong></h5>
+    Here you can put all you bots. If you don't put any, there will be no possibility to fight.
+    <h5>animation.js</h5>
+    We want you to realize following functions:
+    <ul>
+        <li><strong>initAnimation( gameHistory )</strong></li>
+        <li><strong>drawFrame( turnData ) </strong> - you decide how turnData looks like
+            by printing JSON in game.ext.
+        </li>
+    </ul>
+    <h5><strong>description.html</strong></h5>
+    Needless to say that the better the description is the happier the players are.
+    <h5><strong> bots.json</strong></h5>
+    This file is optional, but recommended. In the JSON you can specify information about bots,
+    such as their name(ex. "Easy Bot", "Hard Bot"). <br>
+
+    <h5><strong>Example</strong></h5>
+    Below you can find the example of the game in the .zip archive. 
+    TODO : do sciagania archiwum
+</div>
+
+<%- include('partials/end.ejs') %>
