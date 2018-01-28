@@ -10,34 +10,43 @@
         min-width: 500px;
         min-height: 300px;
     }
-    #upload-form {
-        margin: 20px
-
-    }
 </style>
 
-Complete requested fields and click submit to upload your new game ! 
+
+
+<div class="h4 text-center"> Complete requested fields and upload your own game ! </div>
 
 <form id="send-game" method="post" enctype="multipart/form-data">
-    Game ID:
-    <input type="text" name="gameID"><br>
-    Game title:
-    <input type="text" name="gameTitle"><br>
-    Game archive:<br>
-    <input name="gameArchive" type="file"><br>
-    <div class="col-md-12" id="lan">
-        <%- include('partials/dropdown.ejs', {
-            defaultOption: 'cpp',
-            options: (function() {
-            const options = {};
-            for(var key in languages) {
-                options[key] = languages[key].name;
-            }
-            return options;
-            })()
-            }) %>
-    </div> <br>
-    <input id="upload" type="submit" value="Upload">
+    <div class="form-group">
+        <label>Game ID</label>
+        <input type="text" class="form-control" name="gameID">
+    </div>
+    <div class="form-group">
+        <label>Game title</label>
+        <input type="text" class="form-control" name="gameTitle">
+    </div>
+    <div class="form-group">
+        <label>Archive</label>
+        <input name="gameArchive" class="form-control" type="file">
+    </div>
+    <div class="form-group">
+            <label>Language</label>
+            <div id="lan">
+                    <%- include('partials/dropdown.ejs', {
+                        defaultOption: 'cpp',
+                        options: (function() {
+                        const options = {};
+                        for(var key in languages) {
+                            options[key] = languages[key].name;
+                        }
+                        return options;
+                        })()
+                        }) %>
+                </div> 
+    </div>
+    <center>
+    <input class="btn btn-primary" id="upload" type="submit" value="Upload">
+    </center>
 </form>
 
 <script src="/scripts/DropDown.js"></script>
@@ -99,6 +108,7 @@ Complete requested fields and click submit to upload your new game !
                     }
                     else {
                         console.log("SUCCES");
+                        document.getElementById("send-game").reset();
                         $('#modal-message .modal-title').text("Success");
                         $('#modal-message .modal-body').text(
                             "Congratulations, game successfully uploaded");
