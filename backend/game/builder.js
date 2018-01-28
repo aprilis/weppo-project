@@ -25,7 +25,7 @@ const defaultOptions = {
  */
 
 function getDataDirectory ( Sub ) {
-    return path.resolve(dataPath, Sub.gamename, Sub.type, Sub.username, uniqid());
+    return path.resolve(dataPath, Sub.gameID,  Sub.type, Sub.username, uniqid());
 }
 
 function copy(o) {
