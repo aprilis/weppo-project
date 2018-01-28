@@ -2,15 +2,15 @@
 <nav class="navbar navbar-default">
         <div class="container-fluid">
           <div class="navbar-header">
-            <a class="navbar-brand">Bot Platform</a>
+            <a href="/" class="navbar-brand">Bot Platform</a>
           </div>
           <ul class="nav navbar-nav">
             <li><a href="/games">Games</a></li>
             <li><a href="/upload">Upload Game</a></li>
-        
-            <li>
-              <a href="/logout">Log out</a>
-            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a><span class="glyphicon glyphicon-user"></span><%= userName %></a></li>
+            <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
           </ul>
         </div>
 </nav>
