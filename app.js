@@ -53,6 +53,7 @@ var routes = require('./routes/index')
 
 // Routes
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/ace-builds', express.static(path.join(__dirname, 'node_modules', 'ace-builds')));
 app.use('/', routes);
 app.use('/signup', signup);
 app.use('/login', login);
