@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const { build } = require('./builder');
 const { repeat, copy } = require('../util/misc');
+const language = require('../util/language');
 
 var Game = require('../../models/Game');
 
@@ -66,16 +67,26 @@ async function buildGame(Sub) {
 }
 
 async function buildBots(Sub) {
+    var botsInfo = {};
+    try {
+        botsInfo = await fs.readJson(Sub.botsInfoPath, { throws: false });
+    } catch(e) {
+        //it's ok as this file isn't required
+    }
     var bots = [];
     for (botSrc of Sub.bots) {
+        const basename = path.basename(botSrc);
+        const info = botsInfo[basename] || {};
         var bot = await build({
             type : 'bot',
             codePath : botSrc,
             gamename : Sub.gamename,
             gameID : Sub.gameID,
             username : Sub.username,
-            language : Sub.language 
+            language : info.language || language.detect(basename) || Sub.language
         });
+        bot.name = info.name || basename;
+        bot.id = basename;
         bots.push(bot);
     }
     return bots;
@@ -133,7 +144,8 @@ async function uploadGame(Sub, options) {
         game.description = Sub.description;
     }
     catch(e) {
-        return ({err : e});
+        console.error(e);
+        return ({err : e.toString()});
     }
     console.log("game built")
     console.log(game);

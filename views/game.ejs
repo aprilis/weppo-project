@@ -29,12 +29,14 @@
                 </div>
                 <div class="col-md-4">
                     <%- include('partials/dropdown.ejs', {
-                        defaultOption: 'random-bot',
-                        options: {
-                            'random-bot': 'Random Bot',
-                            'stupid-bot': 'Stupid Bot',
-                            'super-bot': 'Super Bot'
-                        }
+                        defaultOption: game.bots[0].id,
+                        options: (function() {
+                                const result = {};
+                                for(var bot of game.bots) {
+                                    result[bot.id] = bot.name;
+                                }
+                                return result;
+                            })()
                     }) %>
                 </div>
                 <div class="col-md-4">

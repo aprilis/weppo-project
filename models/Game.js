@@ -20,7 +20,9 @@ var GameSchema = mongoose.Schema({
     owner :{type: String, required : true},
     bots : [{
         command : {type : String},
-        args : {type : [String]} 
+        args : {type : [String]},
+        id: {type : String},
+        name: {type : String}
     }],
     description : {type: String}
 });

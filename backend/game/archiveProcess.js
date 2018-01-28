@@ -46,6 +46,7 @@ function handleArchivePromise(archivePath, language) {
                 var gamePath = path.join(datadir, gameExtension(language) );
                 var libPath = path.join(datadir, "lib");
                 var botsPath = path.join(datadir, "bots");
+                var botsInfoPath = path.join(datadir, "bots.json");
                 var validArch = validateArchive(descPath, animationPath, 
                                                 gamePath, libPath, botsPath, language); 
                 if (validArch.err ) rej(validArch);
@@ -61,6 +62,7 @@ function handleArchivePromise(archivePath, language) {
                         codePath : gamePathNew,
                         scriptPath : animationPath,
                         bots : bots,
+                        botsInfoPath: botsInfoPath,
                         language : language,
                         description : fs.readFileSync(descPath).toString()
                     });
