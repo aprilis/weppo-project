@@ -38,15 +38,15 @@ const defaultOptions = {
 }
 
 function getCodeDirectory ( Sub ) {
-    return path.resolve(codePath, Sub.gamename);
+    return path.resolve(codePath, Sub.gameID);
 }
 
 function getScriptDirectory( Sub) {
-    return path.resolve(scriptPath, Sub.gamename);
+    return path.resolve(scriptPath, Sub.gameID);
 }
 
 function getScriptRelPath(Sub) {
-    return path.join(scriptRelPath, Sub.gamename, 'script.js');
+    return path.join(scriptRelPath, Sub.gameID, 'script.js');
 }
 
 async function buildGame(Sub) {
@@ -55,6 +55,7 @@ async function buildGame(Sub) {
         type: 'game',
         codePath: Sub.codePath,
         gamename: Sub.gamename,
+        gameID: Sub.gameID,
         username: Sub.username,
         language: Sub.language
     });
@@ -71,6 +72,7 @@ async function buildBots(Sub) {
             type : 'bot',
             codePath : botSrc,
             gamename : Sub.gamename,
+            gameID : Sub.gameID,
             username : Sub.username,
             language : Sub.language 
         });
