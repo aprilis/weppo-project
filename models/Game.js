@@ -30,8 +30,17 @@ GameSchema.statics.existsPromise = function (id, owner) {
         (res, rej ) => {
             this.findOne({gameID : id}, (err, game ) => {
                 if(err) rej(err);
-                if(game && game.owner != owner) res(true);
-                res(false);
+                if(!game) {
+                    res(false);
+                }
+                else if(game && game.owner != owner) res(true);
+                else {
+                    console.log("DELETING GAME ", id);
+                    this.deleteOne({gameID : id}, (err) => {
+                        if (err) rej(err);
+                        res(false);
+                    });
+                }
         });
     });
 };
