@@ -126,6 +126,9 @@
     });
 </script>
 
+<script src="/scripts/SocketIOChat.js"></script>
+<script> socket = initSocketIO('<%= game.gameID %>'); </script>
+
 <%- include('partials/viewer-init.ejs', { gameScript: game.script }) %>
 <%- include('partials/code-editor-init.ejs') %>
 <%- include('partials/end.ejs') %>
