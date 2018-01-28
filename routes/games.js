@@ -25,6 +25,9 @@ router.get('/', auth.IsAuthenticated, function(req, res, next){
 router.get('/:gameId', auth.IsAuthenticated, function(req, res, next) {
     Game.getGameByIDPromise(req.params.gameId)
         .then( (game ) => {
+            if(game == null) {
+                next();
+            }
             res.render('game.ejs', {
                 game : game,
                 user : req.user,
@@ -32,25 +35,7 @@ router.get('/:gameId', auth.IsAuthenticated, function(req, res, next) {
             });
         }
     ).catch(console.error);
-   /* res.render('game.ejs', {
-        user: req.user,
-        game: {
-            id: req.params.gameId,
-            title: 'Game Title',
-            description: `
-                Some introduction to the game
-                <h4>Details</h4>
-                Some details about the game mechanics
-                <h4>Input</h4>
-                Description of the standard input
-                <h4>Output</h4>
-                Description of the standard output
-            `,
-            animation: '/gameScripts/tictactoe/script.js'
-        },
-        languages: languages
-    }); */
-})
+});
 
 console.log('Games arena');
 
