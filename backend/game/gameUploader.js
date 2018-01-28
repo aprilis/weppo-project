@@ -31,7 +31,7 @@ var Game = require('../../models/Game');
 
 codePath = 'games/';
 scriptPath = 'public/gameScripts/';
-scriptRelPath ='gameScripts';
+scriptServerPath ='/gameScripts';
 
 const defaultOptions = {
     timeLimit : 50000
@@ -45,8 +45,8 @@ function getScriptDirectory( Sub) {
     return path.resolve(scriptPath, Sub.gameID);
 }
 
-function getScriptRelPath(Sub) {
-    return path.join(scriptRelPath, Sub.gameID, 'script.js');
+function getScriptServerPath(Sub) {
+    return path.join(scriptServerPath, Sub.gameID, 'script.js');
 }
 
 async function buildGame(Sub) {
@@ -59,7 +59,7 @@ async function buildGame(Sub) {
         username: Sub.username,
         language: Sub.language
     });
-    game.scriptPath = getScriptRelPath(Sub);
+    game.scriptPath = getScriptServerPath(Sub);
     game.owner = Sub.username;
     game.name = Sub.gamename;
     return game;
