@@ -45,6 +45,7 @@ function getScriptDirectory( Sub) {
 }
 
 async function buildGame(Sub) {
+    console.log("CODE PATH ", Sub.codePath);
     var game = await build({
         type: 'game',
         codePath: Sub.codePath,
@@ -61,7 +62,7 @@ async function buildGame(Sub) {
 
 async function gameExists (Sub) {
     console.log("checking ", Sub.gamename);
-    var exists = await Game.existsPromise(Sub.gamename);
+    var exists = await Game.existsPromise(Sub.gameID);
     console.log("GAME EXISTS ", exists);
     return exists;
 }
@@ -71,11 +72,13 @@ function saveGamePromise(game) {
 
     return new Promise((res, rej) => {
         var g = new Game({
+            gameID : game.gameID,
             name : game.name,
             command : game.command,
             args :  game.args,
             script : game.scriptPath,
-            owner : game.owner
+            owner : game.owner,
+            bots : game.bots
         });
 
         g.save((err) => {
@@ -91,7 +94,7 @@ async function uploadGame(Sub, options) {
     console.log("EXIST", exist);
     if (exist == true) {
         console.log("SHIT");
-        return ({error :"gamekjanja of the given name already exists"});
+        return ({error :"game of the given name already exists"});
     }
     options = Object.assign({}, defaultOptions, options);    
     const codeDirectory = getCodeDirectory(Sub);
@@ -101,7 +104,9 @@ async function uploadGame(Sub, options) {
     fs.copySync(Sub.codePath, path.join(codeDirectory, 'code') );
     fs.copySync(Sub.scriptPath, path.join(scriptDirectory, 'script.js'));
     try {
-    var game = await buildGame(Sub);
+        var game = await buildGame(Sub);
+        game.gameID = Sub.gameID;
+        game.bots = Sub.bots;
     }
     catch(e) {
         return ({error : e});

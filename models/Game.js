@@ -2,6 +2,7 @@ var mongoose = require('mongoose')
 
 /* 
     Game = {
+        gameID
         name :
         command : 
         args :
@@ -11,17 +12,19 @@ var mongoose = require('mongoose')
 */
 
 var GameSchema = mongoose.Schema({
+    gameID : {type :String, required : true},
     name : {type: String, required : true},
     command : {type: String, required : true},
     args : {type: [String]},
     script : {type: String, required : true},
-    owner :{type: String, required : true}
+    owner :{type: String, required : true},
+    bots : {type: [String]}
 });
 
-GameSchema.statics.existsPromise = function (name) {
+GameSchema.statics.existsPromise = function (id) {
     return new Promise( 
         (res, rej ) => {
-            this.findOne({name : name}, (err, game ) => {
+            this.findOne({gameID : id}, (err, game ) => {
                 if(err) rej(err);
                 if(game) res(true);
                 res(false);

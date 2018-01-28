@@ -93,11 +93,11 @@ async function build( Sub, options ) {
         return 'code' + (ext ? '.' + ext : '');
     }
 
-    const codePath = path.join(options.dataDirectory, codeExtension(Sub));
-    const execPath = path.join(options.dataDirectory, 'executable');
+    var codePath = path.join(options.dataDirectory, codeExtension(Sub));
+    var execPath = path.join(options.dataDirectory, 'executable');
 
     if(Sub.codePath) {
-        await fs.copy(Sub.codePath, codePath);
+        codePath = Sub.codePath;
     } else {
         await fs.writeFile(codePath, Sub.code);
     }

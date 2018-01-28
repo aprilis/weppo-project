@@ -23,28 +23,15 @@ Complete requested fields and click submit to upload your new game !
 
 
     <form id="send-game" method="post" enctype="multipart/form-data">
+            Game ID:<br>
+            <input type="text" name="gameID"><br>
             Game title:<br>
             <input type="text" name="gameTitle"><br>
             <br>
-            Game code:<br>
-            <div style="display: flex;">
-                <div>
-                    <textarea form="send-game" name="code-text" 
-                        placeholder="C++ code of the game" wrap="soft"></textarea><br>
-                    <input name="code-file" type="file"><br>
-                </div>
-            </div>
-            <br>
-            Animation script:<br>
-            <div style="display: flex;">
-                <div>
-                    <textarea form="send-game" name="script-text" 
-                        placeholder="JS code of animation script" wrap="soft"/></textarea><br>
-                    <input name="script-file" type="file"><br>
-                </div>
-            </div>
-            <br>
-        <input id="upload" type="submit" value="Upload">
+            Game archive:<br>
+            <input name="gameArchive" type="file"><br>
+            Language: <input type="text" name="gameLanguage"><br>
+            <input id="upload" type="submit" value="Upload">
     </form>
 
 
@@ -54,24 +41,18 @@ Complete requested fields and click submit to upload your new game !
         console.log('CHUJ');
         e.preventDefault();
         var data = new FormData();
-        var codeFile = $('#send-game :input[name="' + 'code' + '-file"]')[0];
-        var codeText = $('#send-game :input[name="' + 'code' + '-text"]')[0];
-        if(codeFile.files[0]) {
-            data.append('code', codeFile.files[0]);
-        } else {
-            data.append('code', new Blob([codeText.value]));
-        }
 
-        var scriptFile = $('#send-game :input[name="' + 'script' + '-file"]')[0];
-        var scriptText = $('#send-game :input[name="' + 'script' + '-text"]')[0];
-        if(scriptFile.files[0]) {
-            data.append('script', scriptFile.files[0]);
-        } else {
-            data.append('script', new Blob([scriptText.value]));
-        }
+        var archiveFile = $('#send-game :input[name="gameArchive"]')[0];
+        data.append('archive', archiveFile.files[0]);
         
         var title = $('#send-game :input[name="gameTitle"]')[0];
         data.append('title', title.value);
+
+        var ID = $('#send-game :input[name="gameID"]')[0];
+        data.append('ID', ID.value );
+
+        var language = $('#send-game :input[name="gameLanguage"]')[0];
+        data.append('language', language.value);
 
         data.append('username', "<%= user.userName %>");
 
