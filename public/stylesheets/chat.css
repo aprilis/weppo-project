@@ -1,12 +1,7 @@
-body{
-    height:400px;
-    position: fixed;
-    bottom: 0;
-}
-.col-md-2, .col-md-10{
+.chat-window .col-md-2, .col-md-10{
     padding:0;
 }
-.panel{
+.chat-window .panel{
     margin-bottom: 0px;
 }
 .chat-window{
@@ -63,11 +58,11 @@ body{
     overflow: hidden;
     display: flex;
 }
-img {
+.chat-window img {
     display: block;
     width: 100%;
 }
-.avatar {
+.chat-window .avatar {
     position: relative;
 }
 .base_receive > .avatar:after {

@@ -126,13 +126,8 @@
     });
 </script>
 
-<<<<<<< HEAD
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-=======
->>>>>>> dacb2f017ac67740a279e4ed1fec073f3ba0b91b
 <script src="/socket.io/socket.io.js"></script>
 <script src="/scripts/SocketIOChat.js"></script>
-<script> socket = initSocketIO('<%= game.gameID %>', '<%= user.userName %>'); </script>
 
 <%- include('partials/viewer-init.ejs', { gameScript: game.script }) %>
 <%- include('partials/code-editor-init.ejs') %>
