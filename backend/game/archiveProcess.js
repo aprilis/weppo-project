@@ -39,31 +39,36 @@ function gameExtension(language) {
 function handleArchivePromise(archivePath, language) {
     return new Promise( (res, rej ) => {
         var datadir= getDataDirectory();
-        fs.createReadStream(archivePath).pipe(unzip.Extract({path : datadir}))
-        .on("close", () => {
-            var descPath = path.join(datadir, "description.html");
-            var animationPath = path.join(datadir, "animation.js");
-            var gamePath = path.join(datadir, gameExtension(language) );
-            var libPath = path.join(datadir, "lib");
-            var botsPath = path.join(datadir, "bots");
-            var validArch = validateArchive(descPath, animationPath, 
-                                            gamePath, libPath, botsPath, language); 
-            if (validArch.err ) rej(validArch.err);
-            var gamePathNew = path.join(libPath, gameExtension(language));
-            fs.copySync(gamePath, gamePathNew);
-            var botFiles = fs.readdirSync(botsPath);
-            var bots = [];
-            for (bot of botFiles) {
-                bots.push(path.join(botsPath, bot));
-            }
-            res({
-                codePath : gamePathNew,
-                scriptPath : animationPath,
-                bots : bots,
-                language : language,
-                description : fs.readFileSync(descPath).toString()
+            fs.createReadStream(archivePath).pipe(unzip.Extract({path : datadir}))
+            .on("close", () => {
+                var descPath = path.join(datadir, "description.html");
+                var animationPath = path.join(datadir, "animation.js");
+                var gamePath = path.join(datadir, gameExtension(language) );
+                var libPath = path.join(datadir, "lib");
+                var botsPath = path.join(datadir, "bots");
+                var validArch = validateArchive(descPath, animationPath, 
+                                                gamePath, libPath, botsPath, language); 
+                if (validArch.err ) rej(validArch);
+                else {
+                    var gamePathNew = path.join(libPath, gameExtension(language));
+                    fs.copySync(gamePath, gamePathNew);
+                    var botFiles = fs.readdirSync(botsPath);
+                    var bots = [];
+                    for (bot of botFiles) {
+                        bots.push(path.join(botsPath, bot));
+                    }
+                    res({
+                        codePath : gamePathNew,
+                        scriptPath : animationPath,
+                        bots : bots,
+                        language : language,
+                        description : fs.readFileSync(descPath).toString()
+                    });
+                }
+            })
+            .on("error", () => {
+                rej({err : "Wrong format of archive"});
             });
-        });
     });   
 }
 

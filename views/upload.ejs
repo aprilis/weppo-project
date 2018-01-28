@@ -5,9 +5,6 @@
 
 Complete requested fields and click submit to upload your new game ! 
 
-<% var username = user.userName %>
-<%= username %>
-
 <script src="/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 
 <style>
@@ -21,25 +18,60 @@ Complete requested fields and click submit to upload your new game !
     }
 </style>
 
+<div id="upload" class="tab-pane fade in">
+        <form id="send-game" method="post" enctype="multipart/form-data">
+                Game ID:
+                <input type="text" name="gameID"><br>
+                Game title:
+                <input type="text" name="gameTitle"><br>
+                <br>
+                Game archive:<br>
+                <input name="gameArchive" type="file"><br>
+                <div id ="lan">
+                        Language: 
+                        <%- include('partials/dropdown.ejs', {
+                            defaultOption: 'cpp',
+                            options: (function() {
+                                const options = {};
+                                for(var key in languages) {
+                                    options[key] = languages[key].name;
+                                }
+                                return options;
+                            })()
+                        }) %>
+                </div> <br>
+                <input id="upload" type="submit" value="Upload">
+                
+        </form>
 
-    <form id="send-game" method="post" enctype="multipart/form-data">
-            Game ID:<br>
-            <input type="text" name="gameID"><br>
-            Game title:<br>
-            <input type="text" name="gameTitle"><br>
-            <br>
-            Game archive:<br>
-            <input name="gameArchive" type="file"><br>
-            Language: <input type="text" name="gameLanguage"><br>
-            <input id="upload" type="submit" value="Upload">
-    </form>
 
+</div>
+
+<!-- Modal - displaying messages -->
+<div class="modal fade" id="modal-message" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <p></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 <script>
     $('#send-game').on('submit', e => {
-        console.log('CHUJ');
+        console.log('CHUJek');
         e.preventDefault();
+
         var data = new FormData();
 
         var archiveFile = $('#send-game :input[name="gameArchive"]')[0];
@@ -51,8 +83,8 @@ Complete requested fields and click submit to upload your new game !
         var ID = $('#send-game :input[name="gameID"]')[0];
         data.append('ID', ID.value );
 
-        var language = $('#send-game :input[name="gameLanguage"]')[0];
-        data.append('language', language.value);
+        var language =  $(`#lan .dropdown`).data('value');
+        data.append('language', language);
 
         data.append('username', "<%= user.userName %>");
 
@@ -63,6 +95,18 @@ Complete requested fields and click submit to upload your new game !
             .then(
                 response => {
                     console.log(response);
+                    if (response.err) {
+                        $('#modal-message .modal-title').text("Error");
+                        $('#modal-message .modal-body').text(response.err);
+                        $('#modal-message').modal();
+                    }
+                    else {
+                        console.log("SUCCES");
+                        $('#modal-message .modal-title').text("Success");
+                        $('#modal-message .modal-body').text(
+                            "Congratulations, game successfully uploaded");
+                        $('#modal-message').modal();
+                    }
                 }
             )
             .catch(console.error);

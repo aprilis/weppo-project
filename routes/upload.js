@@ -5,6 +5,8 @@ const multer = require('multer');
 const upload = multer({ dest: 'data/archives' });
 const {uploadGame} = require('../backend/game/gameUploader');
 const {processArchive} = require('../backend/game/archiveProcess');
+const languages = require('../config/languages');
+
 
 
 /**
@@ -13,7 +15,8 @@ const {processArchive} = require('../backend/game/archiveProcess');
 router.get('/', auth.IsAuthenticated, function(req, res, next){
     res.render('upload.ejs',
     {
-        user: req.user
+        user: req.user,
+        languages: languages
     });
 });
 

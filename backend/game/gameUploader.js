@@ -126,7 +126,7 @@ async function uploadGame(Sub, options) {
         game.description = Sub.description;
     }
     catch(e) {
-        return ({error : e});
+        return ({err : e});
     }
     console.log("game built")
     console.log(game);
