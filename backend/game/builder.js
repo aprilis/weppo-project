@@ -10,7 +10,7 @@ const { copy } = require('../util/misc');
 const dataPath = 'data/builds';
 
 const defaultOptions = {
-    timeLimit : 10000
+    timeLimit : 100000
 };
 
 /*
