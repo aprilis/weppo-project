@@ -78,7 +78,8 @@ function saveGamePromise(game) {
             args :  game.args,
             script : game.scriptPath,
             owner : game.owner,
-            bots : game.bots
+            bots : game.bots,
+            description : game.description
         });
 
         g.save((err) => {
@@ -107,6 +108,7 @@ async function uploadGame(Sub, options) {
         var game = await buildGame(Sub);
         game.gameID = Sub.gameID;
         game.bots = Sub.bots;
+        game.description = Sub.description;
     }
     catch(e) {
         return ({error : e});

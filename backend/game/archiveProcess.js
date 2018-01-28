@@ -56,7 +56,8 @@ function handleArchivePromise(archivePath, language) {
                 codePath : gamePathNew,
                 scriptPath : animationPath,
                 bots : fs.readdirSync(botsPath),
-                language : language
+                language : language,
+                description : fs.readFileSync(descPath).toString()
             });
         });
     });   

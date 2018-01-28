@@ -18,7 +18,8 @@ var GameSchema = mongoose.Schema({
     args : {type: [String]},
     script : {type: String, required : true},
     owner :{type: String, required : true},
-    bots : {type: [String]}
+    bots : {type: [String]},
+    description : {type: String}
 });
 
 GameSchema.statics.existsPromise = function (id, owner) {
