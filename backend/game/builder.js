@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 const childProcess = require('child_process');
 const format = require('string-format');
 const config = require('../../config/languages');
+const language = require('../util/language');
 
 const dataPath = 'data/builds';
 
@@ -93,12 +94,21 @@ async function build( Sub, options ) {
         return 'code' + (ext ? '.' + ext : '');
     }
 
-    var codePath = path.join(options.dataDirectory, codeExtension(Sub));
+    var codePath;
     var execPath = path.join(options.dataDirectory, 'executable');
 
     if(Sub.codePath) {
-        codePath = Sub.codePath;
+        if(Sub.language === undefined) {
+            Sub.language = language.detect(Sub.codePath);
+        }
+        if(Sub.type == 'game') {
+            codePath = Sub.codePath;
+        } else {
+            codePath = path.join(options.dataDirectory, codeExtension(Sub));
+            await fs.copy(Sub.codePath, codePath);
+        }
     } else {
+        codePath = path.join(options.dataDirectory, codeExtension(Sub));
         await fs.writeFile(codePath, Sub.code);
     }
 
