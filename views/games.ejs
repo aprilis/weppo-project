@@ -3,18 +3,21 @@
 <%- include('partials/menu.ejs', {userName : user.userName}) %>
 
 
-<header>
-    <h1 class="text-center"> Welcome <%= user.userName %>!</h1>
-</header>
 <h2>
     Please, choose game you want to compete in:
 </h2>
 
+<table class="table table-hover">
+<tbody>
 <% for (var game of games) { %>
-<div class="row">
-    <div class="col col-sm-4 col-md-6 col-lg-6"><strong><%= game.name %> </strong></div>
-    <div class="col col-sm-8 col-md-6 col-lg-6"> <a href="/games/<%= game.gameID %>">Get in</a></div>
-</div>
+<tr>
+    <td> <%= game.gameID %> </td>
+    <td> <strong><%= game.name %> </strong> </td>
+    <td> <a href="/games/<%= game.gameID %>">Get in</a> </td>
+</tr>
 <% } %>
+</tbody>
+</table>
+
 
 <%- include('partials/end.ejs') %>
