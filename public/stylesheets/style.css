@@ -12,3 +12,36 @@ canvas {
     margin: 10px;
     border: 1px solid gray;
 }
+
+.game-navigator {
+    background: #cacaca;
+}
+
+.game-navigator > * {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.game-canvas-container {
+    border-color: #cacaca;
+    border-style: solid;
+    border-width: 3px;
+    border-top-width: 3px;
+    border-left-width: 3px;
+    border-top-width: 3px;
+    border-bottom-width: 0px;
+}
+
+.game-current-turn {
+    padding-top: 2px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    border-radius: 3px;
+    background: #fcfcfc;
+    height: 25px;
+}
+
+.game-current-turn.disabled {
+    color: #5a5a5a;
+    background: #ececec;
+}

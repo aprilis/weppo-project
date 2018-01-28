@@ -1,5 +1,5 @@
 function resetViewer(viewer) {
-    viewer.find('.game-navigator-buttons > .btn').removeClass('disabled').off('click');
+    viewer.find('.game-navigator *').removeClass('disabled').off('click');
     updatePlayButton(viewer);
 }
 
@@ -12,7 +12,7 @@ function updatePlayButton(viewer) {
 }
 
 function updateTurn(viewer, currentTurn, allTurns) {
-    viewer.find('.game-current-turn').text(currentTurn + '/' + allTurns);
+    viewer.find('.game-current-turn-number').text(currentTurn + '/' + allTurns);
 }
 
 function viewGame(viewerId, history) {
