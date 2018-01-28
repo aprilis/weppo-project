@@ -62,7 +62,7 @@ async function buildGame(Sub) {
 
 async function gameExists (Sub) {
     console.log("checking ", Sub.gamename);
-    var exists = await Game.existsPromise(Sub.gameID);
+    var exists = await Game.existsPromise(Sub.gameID, Sub.username);
     console.log("GAME EXISTS ", exists);
     return exists;
 }

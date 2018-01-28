@@ -21,12 +21,12 @@ var GameSchema = mongoose.Schema({
     bots : {type: [String]}
 });
 
-GameSchema.statics.existsPromise = function (id) {
+GameSchema.statics.existsPromise = function (id, owner) {
     return new Promise( 
         (res, rej ) => {
             this.findOne({gameID : id}, (err, game ) => {
                 if(err) rej(err);
-                if(game) res(true);
+                if(game && game.owner != owner) res(true);
                 res(false);
         });
     });
