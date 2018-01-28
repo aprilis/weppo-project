@@ -3,9 +3,8 @@
 <%- include('partials/menu.ejs', {userName : user.userName}) %>
 
 
-Complete requested fields and click submit to upload your new game ! 
-
 <script src="/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="/scripts/DropDown.js"></script>
 
 <style>
     textarea {
@@ -18,34 +17,30 @@ Complete requested fields and click submit to upload your new game !
     }
 </style>
 
-<div id="upload" class="tab-pane fade in">
-        <form id="send-game" method="post" enctype="multipart/form-data">
-                Game ID:
-                <input type="text" name="gameID"><br>
-                Game title:
-                <input type="text" name="gameTitle"><br>
-                <br>
-                Game archive:<br>
-                <input name="gameArchive" type="file"><br>
-                <div id ="lan">
-                        Language: 
-                        <%- include('partials/dropdown.ejs', {
-                            defaultOption: 'cpp',
-                            options: (function() {
-                                const options = {};
-                                for(var key in languages) {
-                                    options[key] = languages[key].name;
-                                }
-                                return options;
-                            })()
-                        }) %>
-                </div> <br>
-                <input id="upload" type="submit" value="Upload">
-                
-        </form>
 
+Complete requested fields and click submit to upload your new game ! 
 
-</div>
+<form id="send-game" method="post" enctype="multipart/form-data">
+    Game ID:
+    <input type="text" name="gameID"><br>
+    Game title:
+    <input type="text" name="gameTitle"><br>
+    Game archive:<br>
+    <input name="gameArchive" type="file"><br>
+    <div class="col-md-12" id="lan">
+        <%- include('partials/dropdown.ejs', {
+            defaultOption: 'cpp',
+            options: (function() {
+            const options = {};
+            for(var key in languages) {
+                options[key] = languages[key].name;
+            }
+            return options;
+            })()
+            }) %>
+    </div> <br>
+    <input id="upload" type="submit" value="Upload">
+</form>
 
 <!-- Modal - displaying messages -->
 <div class="modal fade" id="modal-message" role="dialog">
@@ -85,6 +80,8 @@ Complete requested fields and click submit to upload your new game !
 
         var language =  $(`#lan .dropdown`).data('value');
         data.append('language', language);
+
+        console.log("LANGUAGE ", language);
 
         data.append('username', "<%= user.userName %>");
 
