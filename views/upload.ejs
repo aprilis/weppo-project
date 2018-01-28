@@ -27,7 +27,7 @@
     </div>
     <div class="form-group">
         <label>Archive</label>
-        <input name="gameArchive" class="form-control" type="file">
+        <input name="gameArchive" type="file">
     </div>
     <div class="form-group">
             <label>Language</label>
@@ -108,6 +108,7 @@
                     }
                     else {
                         console.log("SUCCES");
+                        console.log(response);
                         document.getElementById("send-game").reset();
                         $('#modal-message .modal-title').text("Success");
                         $('#modal-message .modal-body').text(
