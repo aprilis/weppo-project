@@ -34,6 +34,11 @@ function initSocketIO(room, myUserName) {
         var message = msg.message;
         var time = msg.timeString;
         appendMessage(myUserName, user, message, time);
+
+        if (user != myUserName) {
+            var audio = new Audio('/../sounds/msg_beep.mp3');
+            audio.play();
+        }
     });
 
     return socket;
