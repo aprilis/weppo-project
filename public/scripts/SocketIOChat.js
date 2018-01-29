@@ -35,7 +35,7 @@ function initSocketIO(room, myUserName) {
         var time = msg.timeString;
         appendMessage(myUserName, user, message, time);
 
-        if (user != myUserName) {
+        if (soundOn && user != myUserName) {
             var audio = new Audio('/../sounds/msg_beep.mp3');
             audio.play();
         }

@@ -9,6 +9,7 @@
                         <h3 class="panel-title"><span class="glyphicon glyphicon-comment"></span> #<%= gameId %></h3>
                     </div>
                     <div class="col-md-4 col-xs-4" style="text-align: right;">
+                        <a><span id="mute_chat_window" class="glyphicon glyphicon-volume-off icon_volume_off"></span></a>
                         <a><span id="minim_chat_window" class="panel-collapsed glyphicon glyphicon-plus icon_minim"></span></a>
                         <!-- <a href="#"><span class="glyphicon glyphicon-remove icon_close" data-id="chat_window_1"></span></a> -->
                     </div>
@@ -79,6 +80,20 @@ $(document).on('click', '#new_chat', function (e) {
 $(document).on('click', '.icon_close', function (e) {
     //$(this).parent().parent().parent().parent().remove();
     $( "#chat_window_1" ).remove();
+});
+
+var soundOn = false;
+$(document).on('click', '#mute_chat_window', function(e) {
+    if (soundOn) {
+        $('#mute_chat_window').removeClass('glaphyicon-volume-up');
+        $('#mute_chat_window').addClass('glaphyicon-volume-off');
+    }
+    else{
+        $('#mute_chat_window').removeClass('glaphyicon-volume-off');
+        $('#mute_chat_window').addClass('glaphyicon-volume-up');
+    }
+
+    soundOn = !soundOn;
 });
 
 var isDown = false;
