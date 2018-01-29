@@ -1,16 +1,5 @@
 var mongoose = require('mongoose')
 
-/* 
-    Game = {
-        gameID
-        name :
-        command : 
-        args :
-        script : 
-        owner : 
-    }
-*/
-
 var GameSchema = mongoose.Schema({
     gameID : {type :String, required : true},
     name : {type: String, required : true},
