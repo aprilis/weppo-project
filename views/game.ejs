@@ -77,6 +77,13 @@
 </div>
 
 <script>
+    function showModal(title, message) {
+        $('#modal-error .modal-title').text(title);
+            $('#modal-error .modal-body').text(message);
+            $('#modal-error').modal();
+    }
+</script>
+<script>
     $('#quick-fight-button').click(function() {
         const data = new FormData();
         data.append('game', '<%= game.gameID %>');
@@ -95,17 +102,40 @@
             if(response.success) {
                 viewGame('viewer', response);
             } else {
-                $('#modal-error .modal-title').text(response.error.title);
-                $('#modal-error .modal-body').text(response.error.message);
-                $('#modal-error').modal();
+                showModal(response.error.title, response.error.message);
             }
             $(this).removeClass('disabled');
         })
         .catch(e => {
             console.error(e);
-            $('#modal-error .modal-title').text('Unexpected error');
-            $('#modal-error .modal-body').text(e.message);
-            $('#modal-error').modal();
+            showModal('Unexpected error', e.message);
+            $(this).removeClass('disabled');
+        });
+    });
+    $('#submit-button').click(function() {
+        const data = new FormData();
+        data.append('game', '<%= game.gameID %>');
+        data.append('code', codeEditorFile('editor'));
+        data.append('language', codeEditorLanguage('editor'));
+        $(this).addClass('disabled');
+
+        fetch('/submit/ranking', {
+            method: 'post',
+            credentials: 'include',
+            body: data
+        })
+        .then(response => response.json())
+        .then(response => {
+            if(response.success) {
+                showModal('Submission', 'Submission successful!');
+            } else {
+                showModal(response.error.title, response.error.message);
+            }
+            $(this).removeClass('disabled');
+        })
+        .catch(e => {
+            console.error(e);
+            showModal('Unexpected error', e.message);
             $(this).removeClass('disabled');
         });
     });
