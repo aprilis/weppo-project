@@ -15,8 +15,8 @@ const defaultOptions = {
     seed: 0
 };
 
-function getDataDirectory() {
-    return path.resolve(dataPath, uniqid());
+function getDataDirectory(id) {
+    return path.resolve(dataPath, id);
 }
 
 async function monitorBotTimeout(bot, timeout, result) {
@@ -52,16 +52,17 @@ async function monitorBotTimeout(bot, timeout, result) {
 async function runGame(game, bots, options) {
     game = _.clone(game);
     bots = bots.map(_.clone);
-    options = Object.assign({}, defaultOptions, options);
+    options = _(options || {}).defaults(defaultOptions, { id: uniqid() });
 
     bots.forEach((b, i) => b.nr = i);
 
-    const directory = getDataDirectory();
+    const directory = getDataDirectory(options.id);
     await fs.mkdirs(directory);
     
     const historyPath = path.join(directory, 'history.json');
     
     const object = {
+        id: options.id,
         results: null,
         inputs: bots.map(b => path.join(directory, 'input' + b.nr)),
         outputs: bots.map(b => path.join(directory, 'output' + b.nr)),
@@ -102,7 +103,6 @@ async function runGame(game, bots, options) {
         monitors.push(monitorBotTimeout(b, options.timeLimit, monitors.length));
 
         b.process.on('exit', () => {
-            console.log('process', b.nr, 'exited');
             b.process = null;
             if(game.process) {
                 game.process.stdio[2 * b.nr + 1 + 3].end();

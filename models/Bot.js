@@ -1,53 +1,34 @@
-var mongoose = require('mongoose')
+var mongoose = require('mongoose');
+const { queryToPromise } = require('./promise');
 
 var BotSchema = mongoose.Schema({
-    game: {type: String},
-    user: {type: String},
-    id: {type: String},
-    code: {type: String},
-    exec: {type: String},
+    game: {type: String, required: true},
+    user: {type: String, required: true},
+    id: {type: String, required: true},
+    code: {type: String, required: true},
+    language: {type: String, required: true},
+    command: {type: String, required: true},
+    args: {type: [String]},
+    ranking: {type: Boolean, required: true}
 });
 
-BotSchema.statics.existsPromise = function (id, owner) {
-    return new Promise( 
-        (res, rej ) => {
-            this.findOne({gameID : id}, (err, game ) => {
-                if(err) rej(err);
-                if(!game) {
-                    res(false);
-                }
-                else if(game && game.owner != owner) res(true);
-                else {
-                    console.log("DELETING GAME ", id);
-                    this.deleteOne({gameID : id}, (err) => {
-                        if (err) rej(err);
-                        res(false);
-                    });
-                }
-        });
-    });
-};
+BotSchema.statics.botByID = function(id) {
+    return queryToPromise(this.findOne({id: id}));
+}
 
-GameSchema.statics.getGameByIDPromise = function (id) {
-    return new Promise( (res, rej ) => {
-        this.findOne({gameID : id}, (err, game) => {
-            if (err) rej(err);
-            res(game);
-        });
-    });
-};
+BotSchema.statics.rankingBotsForGame = function(game) {
+    return queryToPromise(this.find({game: game, ranking: true}));
+}
 
-GameSchema.statics.getAllPromise = function () {
-    return new Promise( 
-        (res, rej ) => {
-            this.find( {}, (err, games ) => {
-                if(err) rej(err);
-                res(games);
-        });
-    });
-};
+BotSchema.statics.addBot = function(bot) {
+    const ranking = Object.assign({}, bot, { ranking: true });
+    const nonRanking = new Bot(Object.assign(bot, { ranking: false }));
+    return Promise.all([
+        nonRanking.save(),
+        queryToPromise(this.findOneAndUpdate({game: bot.game, user: bot.user},
+             ranking, { upsert: true }))
+    ]);
+}
 
-
-module.exports = mongoose.model('Game', GameSchema);
-
-
+const Bot = mongoose.model('Bot', BotSchema);
+module.exports = Bot;
