@@ -46,9 +46,11 @@ function initSocketIO(room, myUserName) {
 
 function sendMessage() {
     var message = $('#btn-input').val();
-    socket.emit('message', message);
-    $('#btn-input').val('');
-    return false;
+    if (message.length > 0) {
+        socket.emit('message', message);
+        $('#btn-input').val('');
+        return false;
+    }
 }
 
 btnInput = document.getElementById("btn-input");

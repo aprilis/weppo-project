@@ -52,7 +52,7 @@ function initialize(io) {
     
         // Send message
         socket.on('message', function(message) {
-            if(authenticated) {
+            if(authenticated && message.length > 0) {
                 var time = Date.now();
                 
                 // Add to database
