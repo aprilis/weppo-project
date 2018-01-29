@@ -9,6 +9,7 @@
     position:fixed;
     float:right;
     margin-left:10px;
+    z-index:1000;
 }
 .chat-window > div > .panel{
     border-radius: 5px 5px 0 0;
