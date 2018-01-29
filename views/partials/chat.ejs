@@ -1,6 +1,7 @@
 <link href="/stylesheets/chat.css" rel="stylesheet" type="text/css">
 
-<div class="container" style="width:302px;">
+
+<div class="container" style="left: <%= chatLeft %>px; width:302px;">
     <div class="row chat-window col-xs-5 col-md-3" id="chat_window_1" style="margin-left:10px;">
         <div class="col-xs-12 col-md-12">
         	<div class="panel panel-default">
@@ -9,7 +10,11 @@
                         <h3 class="panel-title"><span class="glyphicon glyphicon-comment"></span> #<%= gameId %></h3>
                     </div>
                     <div class="col-md-4 col-xs-4" style="text-align: right;">
-                        <a><span id="mute_chat_window" class="glyphicon glyphicon-volume-off icon_volume_off"></span></a>
+                        <% if (chatSound) { %>
+                            <a><span id="mute_chat_window" class="glyphicon glyphicon-volume-up"></span></a>
+                        <% } else { %>
+                            <a><span id="mute_chat_window" class="glyphicon glyphicon-volume-off"></span></a>
+                        <% 
                         <a><span id="minim_chat_window" class="panel-collapsed glyphicon glyphicon-plus icon_minim"></span></a>
                         <!-- <a href="#"><span class="glyphicon glyphicon-remove icon_close" data-id="chat_window_1"></span></a> -->
                     </div>
@@ -82,7 +87,7 @@ $(document).on('click', '.icon_close', function (e) {
     $( "#chat_window_1" ).remove();
 });
 
-var soundOn = false;
+var soundOn = <%= chatSound %>;
 $(document).on('click', '#mute_chat_window', function(e) {
     if (soundOn) {
         $('#mute_chat_window').removeClass('glyphicon-volume-up');
@@ -94,6 +99,22 @@ $(document).on('click', '#mute_chat_window', function(e) {
     }
 
     soundOn = !soundOn;
+
+    // update here
+    var data = {
+        sound: soundOn
+    }
+
+    fetch('/updateUser/chatSound', {
+        method: 'post',
+        credentials: 'include',
+        body: JSON.stringify(data),
+        headers: new Headers({
+            'Content-Type': 'application/json'
+        })
+    }).then(res => res.json())
+    .catch(error => console.error('Error:', error))
+    .then(response => console.log('Success:', response));
 });
 
 var isDown = false;
@@ -107,6 +128,22 @@ $(document).on('mousedown', '#chat_window_1', function(e) {
 
 $(document).on('mouseup', '', function() {
     isDown = false;
+
+    // update here
+    var data = {
+        left: $("#chat_window_1").css("left")
+    }
+
+    fetch('/updateUser/chatPosition', {
+        method: 'post',
+        credentials: 'include',
+        body: JSON.stringify(data),
+        headers: new Headers({
+            'Content-Type': 'application/json'
+        })
+    }).then(res => res.json())
+    .catch(error => console.error('Error:', error))
+    .then(response => console.log('Success:', response));
 });
 
 $(document).on('mousemove', '', function(event) {
@@ -115,7 +152,11 @@ $(document).on('mousemove', '', function(event) {
         mousePosition = {
             x : event.clientX,
         };
-        $("#chat_window_1").css("left", (mousePosition.x + offsetX) + 'px');
+
+        var newLeftPos = mousePosition.x + offsetX;
+        if (newLeftPos >= 50 && newLeftPos <= document.body.offsetWidth - 302 - 50) {
+            $("#chat_window_1").css("left", (mousePosition.x + offsetX) + 'px');
+        }
     }
 });
 </script>
