@@ -1,0 +1,137 @@
+<%- include('partials/head.ejs', { title: game.name }) %>
+<%- include('partials/auto-menu.ejs') %>
+<%- include('partials/alert.ejs') %>
+
+<ul class="nav nav-pills">
+    <li><a href="#desc">Description</a></li>
+    <li><a href="#arena">Arena</a></li>
+</ul>
+
+<div class="row" style="height: 20px"></div>
+<div class="tab-content">
+    <div id="desc" class="tab-pane fade in">
+        <div class="h2 text-center"> <%= game.name %> </div>
+        <div>
+            <%- game.description %>
+        </div>
+    </div>
+    <div id="arena" class="tab-pane fade in">
+        <div class="col-md-6">
+            <%- include('partials/code-editor', {
+                editorId: 'editor',
+                defaultLanguage: 'cpp'
+            }) %>
+        </div>
+        <div class="col-md-6">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <h5 class="text-right"> Your opponent: <h5>
+                </div>
+                <div class="col-md-4">
+                    <%- include('partials/dropdown.ejs', {
+                        id: 'opponent',
+                        defaultOption: game.bots[0].id,
+                        options: (function() {
+                                const result = {};
+                                for(var bot of game.bots) {
+                                    result[bot.id] = bot.name;
+                                }
+                                return result;
+                            })()
+                    }) %>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-danger" id="quick-fight-button">Fight!</button>
+                    <button class="btn btn-primary" id="submit-button">Submit</button>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div style="height: 10px"></div>
+                <%- include('partials/viewer.ejs', {
+                    id: 'viewer',
+                    canvasWidth: game.canvasWidth || 540,
+                    canvasHeight: game.canvasHeight || 360
+                }) %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal - displaying errors -->
+<div class="modal fade" id="modal-error" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <p></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#quick-fight-button').click(function() {
+        const data = new FormData();
+        data.append('game', '<%= game.gameID %>');
+        data.append('code', codeEditorFile('editor'));
+        data.append('language', codeEditorLanguage('editor'));
+        data.append('opponent', $('#opponent').data('value'));
+        $(this).addClass('disabled');
+
+        fetch('/submit/quick-fight', {
+            method: 'post',
+            credentials: 'include',
+            body: data
+        })
+        .then(response => response.json())
+        .then(response => {
+            if(response.success) {
+                viewGame('viewer', response);
+            } else {
+                $('#modal-error .modal-title').text(response.error.title);
+                $('#modal-error .modal-body').text(response.error.message);
+                $('#modal-error').modal();
+            }
+            $(this).removeClass('disabled');
+        })
+        .catch(e => {
+            console.error(e);
+            $('#modal-error .modal-title').text('Unexpected error');
+            $('#modal-error .modal-body').text(e.message);
+            $('#modal-error').modal();
+            $(this).removeClass('disabled');
+        });
+    });
+</script>
+
+<script>
+    //set tab depending on URL
+    $(function() {
+        const anchor = location.hash || '#desc';
+        $('li:has(a[href="' + anchor + '"])').addClass('active');
+        $(anchor).addClass('active');
+    });
+
+    //handle tab change
+    $('.nav-pills a').click(function (e) {
+        // No e.preventDefault() here
+        $(this).tab('show');
+    });
+</script>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/scripts/SocketIOChat.js"></script>
+<script> socket = initSocketIO('<%= game.gameID %>', '<%= user.userName %>'); </script>
+
+<%- include('partials/viewer-init.ejs', { gameScript: game.script }) %>
+<%- include('partials/code-editor-init.ejs') %>
+
+<%- include('partials/chat.ejs', { userName: user.userName }) %>
+<%- include('partials/end.ejs') %>
