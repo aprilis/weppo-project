@@ -35,13 +35,14 @@ function initialize(io) {
     
             // get database messages here
             var messages = await Message.getAllPromise(room);
-            var messagesToSend = {};
+            var messagesToSend = [];
             messages.forEach(message => {
                 var msg = {
-                    user: message.userName,
+                    userName: message.userName,
                     message: message.message,
-                    created_at: message.created_at
+                    timeString: timeToChatDate(message.created_at)
                 }
+        
                 messagesToSend.push(msg);
             });
     
@@ -52,21 +53,21 @@ function initialize(io) {
         // Send message
         socket.on('message', function(message) {
             if(authenticated) {
-                var time = new Date();
+                var time = Date.now();
                 
                 // Add to database
                 var newMessage = new Message({
                     userName: socket.request.user.userName,
                     message: message,
                     room: room,
-                    created_at: time.now
+                    created_at: time
                 });
 
                 newMessage.save().catch(console.error);
                 io.to(room).emit('message', {
-                    user: socket.request.user.userName,
+                    userName: socket.request.user.userName,
                     message: message,
-                    created_at: time.toISOString()
+                    timeString: timeToChatDate(newMessage.created_at)
                 });
             }
         });
@@ -76,6 +77,10 @@ function initialize(io) {
             clients[room] = _(clients[room]).reject(c => c.socket == socket);
         })
     });
+}
+
+function timeToChatDate(time) {
+    return time.toISOString();
 }
 
 module.exports = {

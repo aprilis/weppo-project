@@ -128,6 +128,7 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/scripts/SocketIOChat.js"></script>
+<script> socket = initSocketIO('<%= game.gameID %>', '<%= user.userName %>'); </script>
 
 <%- include('partials/viewer-init.ejs', { gameScript: game.script }) %>
 <%- include('partials/code-editor-init.ejs') %>

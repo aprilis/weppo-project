@@ -1,5 +1,5 @@
 function initSocketIO(room, myUserName) {
-    var socket = io({
+    socket = io({
         query: {
             room: 'tictactoe'
         }
@@ -9,14 +9,16 @@ function initSocketIO(room, myUserName) {
         socket.emit('authentication', null);
     });
     
-    socket.on('authentication', function(msg) {    
-        msg.forEach(message => {
-            var user = message.userName;
-            var message = message.message;
-            var time = message.created_at;
+    socket.on('authentication', function(msgs) {  
+        if (msgs && msgs.length > 0) {  
+            msgs.forEach(msg => {
+                var user = msg.userName;
+                var message = msg.message;
+                var time = msg.timeString;
 
-            appendMessage(myUserName, user, message, time);            
-        });
+                appendMessage(myUserName, user, message, time);            
+            });
+        }
     });
     
     socket.on('updateUserNames', function(userNames) {
@@ -27,22 +29,35 @@ function initSocketIO(room, myUserName) {
         });
     });
     
-    socket.on('message', function(data) {
-        var user = data.user;
-        var message = data.message;
-        var time = data.created_at;
+    socket.on('message', function(msg) {
+        var user = msg.userName;
+        var message = msg.message;
+        var time = msg.timeString;
         appendMessage(myUserName, user, message, time);
     });
 
     return socket;
 }
 
-document.getElementById("btn-send").addEventListener("click", function(){
+function sendMessage() {
     var message = $('#btn-input').val();
     socket.emit('message', message);
     $('#btn-input').val('');
     return false;
-});
+}
+
+btnInput = document.getElementById("btn-input");
+btnSend = document.getElementById("btn-send");
+if (btnSend && btnInput) {
+    btnSend.addEventListener("click", function(){
+        sendMessage();
+    });
+
+    btnInput.addEventListener("keypress", function(event) {
+        if (event.keyCode == 13)
+            sendMessage();
+    });
+}
 
 function appendMessage(myUserName, user, message, time)
 {
@@ -73,10 +88,10 @@ function appendMessage(myUserName, user, message, time)
     var msgParagraph = document.createElement("p");
     msgParagraph.innerHTML = message;
     divSent.append(msgParagraph);
-
+    
     var timeElement = document.createElement("time");
     timeElement.dateTime = time;
-    timeElement.innerHTML = user;
+    timeElement.innerHTML = user + ' ■ ' + time;
     divSent.append(timeElement);
 
     messages.append(messageDIV);
