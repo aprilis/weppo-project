@@ -14,7 +14,7 @@
     }
 
     function splitStreamLog(stream) {
-        return stream.split('END\n');
+        return [''].concat(stream.split('END\n'));
     }
 
     viewGame = function(viewerId, game) {

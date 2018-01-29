@@ -33,7 +33,7 @@ const config = {
 
     python3: {
         name: 'Python 3',
-        build: 'python3 -m py_compile {code} && mv {code}c {exec}',
+        build: 'python3 -c "import py_compile; py_compile.compile(\'{code}\', \'{exec}\')"',
         run: 'python3 {exec}',
         ext: 'py',
         editor: 'python'
