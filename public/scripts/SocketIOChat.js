@@ -1,7 +1,7 @@
 function initSocketIO(room, myUserName) {
     socket = io({
         query: {
-            room: 'tictactoe'
+            room: room
         }
     });
     
@@ -95,4 +95,5 @@ function appendMessage(myUserName, user, message, time)
     divSent.append(timeElement);
 
     messages.append(messageDIV);
+    messages.scrollTop(messages.prop("scrollHeight"));
 }
