@@ -57,6 +57,8 @@
         $this.parents('.panel').find('.panel-body-footer').slideDown({duration: 200});
         $this.removeClass('panel-collapsed');
         $this.removeClass('glyphicon-plus').addClass('glyphicon-minus');
+        var messages = $('#messages');
+        messages.scrollTop(messages.prop("scrollHeight"));
     }
 });
 $(document).on('focus', '.panel-footer input.chat_input', function (e) {
