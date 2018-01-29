@@ -18,7 +18,11 @@ var UserSchema = new mongoose.Schema({
     loginAttempts: { type: Number, required: true, default: 0 },
     lockUntil: { type: Number },
     created_at: Date,
-    updated_at: Date
+    updated_at: Date,
+
+    // Chat settings
+    chatSound: { type: Boolean, default: false },
+    chatLeft: { type: Number, default: 100 }
 });
 
 /**
@@ -111,6 +115,12 @@ var reasons = UserSchema.statics.failedLogin = {
     PASSWORD_INCORRECT: 1,
     MAX_ATTEMPTS: 2
 };
+
+UserSchema.statics.updateUser = function(user, volume, chatPosition) {
+    this.findOne({ email: user.email }, function(err, user) {
+        
+    });
+}
 
 UserSchema.statics.getAuthenticated = function(email, password, cb) {
 
