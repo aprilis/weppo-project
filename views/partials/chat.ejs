@@ -85,12 +85,12 @@ $(document).on('click', '.icon_close', function (e) {
 var soundOn = false;
 $(document).on('click', '#mute_chat_window', function(e) {
     if (soundOn) {
-        $('#mute_chat_window').removeClass('glaphyicon-volume-up');
-        $('#mute_chat_window').addClass('glaphyicon-volume-off');
+        $('#mute_chat_window').removeClass('glyphicon-volume-up');
+        $('#mute_chat_window').addClass('glyphicon-volume-off');
     }
     else{
-        $('#mute_chat_window').removeClass('glaphyicon-volume-off');
-        $('#mute_chat_window').addClass('glaphyicon-volume-up');
+        $('#mute_chat_window').removeClass('glyphicon-volume-off');
+        $('#mute_chat_window').addClass('glyphicon-volume-up');
     }
 
     soundOn = !soundOn;
@@ -111,7 +111,7 @@ $(document).on('mousemove', '', function(event) {
         mousePosition = {
             x : event.clientX,
         };
-        $("#chat_window_1").left = mousePosition.x + 'px';
+        $("#chat_window_1").css("left", mousePosition.x + 'px');
     }
 });
 </script>
