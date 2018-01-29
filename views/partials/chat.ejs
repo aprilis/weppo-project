@@ -80,4 +80,23 @@ $(document).on('click', '.icon_close', function (e) {
     //$(this).parent().parent().parent().parent().remove();
     $( "#chat_window_1" ).remove();
 });
+
+var isDown = false;
+$(document).on('mousedown', '#chat_window_1', function(e) {
+    isDown = true;
+});
+
+$(document).on('mouseup', '', function() {
+    isDown = false;
+});
+
+$(document).on('mousemove', '', function(event) {
+    event.preventDefault();
+    if (isDown) {
+        mousePosition = {
+            x : event.clientX,
+        };
+        $("#chat_window_1").left = mousePosition.x + 'px';
+    }
+});
 </script>
