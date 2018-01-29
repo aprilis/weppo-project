@@ -115,7 +115,11 @@ $(document).on('mousemove', '', function(event) {
         mousePosition = {
             x : event.clientX,
         };
-        $("#chat_window_1").css("left", (mousePosition.x + offsetX) + 'px');
+
+        var newLeftPos = mousePosition.x + offsetX;
+        if (newLeftPos >= 50 && newLeftPos <= document.body.offsetWidth - 302 - 50) {
+            $("#chat_window_1").css("left", (mousePosition.x + offsetX) + 'px');
+        }
     }
 });
 </script>
