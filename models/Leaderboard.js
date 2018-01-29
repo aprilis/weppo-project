@@ -6,6 +6,7 @@ var LeaderboardSchema = mongoose.Schema({
     game: {type: String, required: true},
     entries: {type: [{
         bot: {type: String, required: true},
+        user: {type: String},
         score: {type: Number, required: true}
     }], required: true}
 });
@@ -19,7 +20,10 @@ LeaderboardSchema.statics.update = function(game, entries) {
         game: game,
         entries: entries
     });
-    return queryToPromise(this.findOneAndUpdate({ game: game }, { entries: entries }, { upsert: true }));
+    return queryToPromise(this.findOneAndUpdate({ game: game }, { 
+        game: game,
+        entries: entries
+    }, { upsert: true }));
 }
 
 const Leaderboard = mongoose.model('Leaderboard', LeaderboardSchema);

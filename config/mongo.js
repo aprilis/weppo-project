@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-var mongoURI = "mongodb://localhost:27017/testBase";
+var mongoURI = "mongodb://localhost:27017/bot-db";
 
 module.exports = {
     init: function () {

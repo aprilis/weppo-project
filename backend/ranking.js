@@ -18,7 +18,7 @@ function asyncForEach(array, func) {
 
 function computeLeaderboard(bots, battles) {
     const results = {};
-    bots.forEach(b => results[b] = {});
+    bots.forEach(b => results[b.id] = {});
     battles.forEach(b => {
         if(b.results === undefined) {
             return;
@@ -27,15 +27,15 @@ function computeLeaderboard(bots, battles) {
         var [r1, r2] = b.results;
         [0, 0].forEach(() => {
             var score;
-            if(r1 == 1) {
+            if(r1 == 2) {
                 //win
-                score = 1;
+                score = 0;
             } else if(r2 == 1) {
                 //draw
                 score = 0.5;
             } else {
                 //lose
-                score = 0;
+                score = 1;
             }
             if(!results[b1][b2]) {
                 results[b1][b2] = [];
@@ -48,18 +48,22 @@ function computeLeaderboard(bots, battles) {
     });
 
     const avg = arr => arr.length ? arr.reduce((a, b) => a + b) / arr.length : 0;
-    const points = _(results).mapObject(res => {
+    const points = bots.map(b => {
+        const res = results[b.id];
         const average = _(res).mapObject(avg);
-        return avg(_(average).values());
+        return {
+            bot: b.id,
+            user: b.user,
+            score: avg(_(average).values())
+        };
     });
-    return points;
+    return points.sort((a, b) => b.score - a.score);
 }
 
 async function updateLeaderboard(game) {
     const leaderboard = await Leaderboard.byGameID(game);
-    const bots = _(await Bot.rankingBotsForGame(game)).pluck('id');
-    const battles = await Battle.battlesOfBots(bots, game);
-    console.log(battles);
+    const bots = await Bot.rankingBotsForGame(game);
+    const battles = await Battle.battlesOfBots(_(bots).pluck('id'), game);
     const results = computeLeaderboard(bots, battles);
     await Leaderboard.update(game, results);
     console.log(results);

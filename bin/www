@@ -52,12 +52,14 @@ io.use(passportSocketIo.authorize({
 }));
 
 /**
- * Set up socket.io for chat management
+ * Set up socket.io
  */
 
 const chat = require('../backend/chat');
 chat.initialize(io);
 
+const liveRanking = require('../backend/liveRanking');
+liveRanking.initialize(io.of('/ranking'));
 
 function onAuthorizeSuccess(data, accept) {
   // This method make sure that the socket is authorized by passport!

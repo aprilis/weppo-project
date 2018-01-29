@@ -5,6 +5,7 @@
 <ul class="nav nav-pills">
     <li><a href="#desc">Description</a></li>
     <li><a href="#arena">Arena</a></li>
+    <li><a href="#leaderboard">Leaderboard</a></li>
 </ul>
 
 <div class="row" style="height: 20px"></div>
@@ -55,6 +56,21 @@
             </div>
         </div>
     </div>
+    <div id="leaderboard" class="tab-pane fade in">
+        <div class="col-md-6">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>User</th>
+                        <th>Score</th>
+                    </th>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <!-- Modal - displaying errors -->
@@ -77,71 +93,6 @@
 </div>
 
 <script>
-    function showModal(title, message) {
-        $('#modal-error .modal-title').text(title);
-            $('#modal-error .modal-body').text(message);
-            $('#modal-error').modal();
-    }
-</script>
-<script>
-    $('#quick-fight-button').click(function() {
-        const data = new FormData();
-        data.append('game', '<%= game.gameID %>');
-        data.append('code', codeEditorFile('editor'));
-        data.append('language', codeEditorLanguage('editor'));
-        data.append('opponent', $('#opponent').data('value'));
-        $(this).addClass('disabled');
-
-        fetch('/submit/quick-fight', {
-            method: 'post',
-            credentials: 'include',
-            body: data
-        })
-        .then(response => response.json())
-        .then(response => {
-            if(response.success) {
-                viewGame('viewer', response);
-            } else {
-                showModal(response.error.title, response.error.message);
-            }
-            $(this).removeClass('disabled');
-        })
-        .catch(e => {
-            console.error(e);
-            showModal('Unexpected error', e.message);
-            $(this).removeClass('disabled');
-        });
-    });
-    $('#submit-button').click(function() {
-        const data = new FormData();
-        data.append('game', '<%= game.gameID %>');
-        data.append('code', codeEditorFile('editor'));
-        data.append('language', codeEditorLanguage('editor'));
-        $(this).addClass('disabled');
-
-        fetch('/submit/ranking', {
-            method: 'post',
-            credentials: 'include',
-            body: data
-        })
-        .then(response => response.json())
-        .then(response => {
-            if(response.success) {
-                showModal('Submission', 'Submission successful!');
-            } else {
-                showModal(response.error.title, response.error.message);
-            }
-            $(this).removeClass('disabled');
-        })
-        .catch(e => {
-            console.error(e);
-            showModal('Unexpected error', e.message);
-            $(this).removeClass('disabled');
-        });
-    });
-</script>
-
-<script>
     //set tab depending on URL
     $(function() {
         const anchor = location.hash || '#desc';
@@ -156,9 +107,19 @@
     });
 </script>
 
+<script> 
+    gameID = "<%= game.gameID %>"
+    userName = "<%= user.userName %>";
+</script>
+<script src="/scripts/Submit.js"></script>
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="/scripts/SocketIOChat.js"></script>
-<script> socket = initSocketIO('<%= game.gameID %>', '<%= user.userName %>'); </script>
+<script src="/scripts/LiveRanking.js"></script>
+<script>
+    initSocketIO(gameID, userName);
+    initLiveRanking(gameID, userName);
+</script>
 
 <%- include('partials/viewer-init.ejs', { gameScript: game.script }) %>
 <%- include('partials/code-editor-init.ejs') %>
