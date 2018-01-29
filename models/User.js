@@ -116,9 +116,33 @@ var reasons = UserSchema.statics.failedLogin = {
     MAX_ATTEMPTS: 2
 };
 
-UserSchema.statics.updateUser = function(user, volume, chatPosition) {
+UserSchema.statics.updateUserChatSound = function(user, chatSound) {
     this.findOne({ email: user.email }, function(err, user) {
+        var updates = {
+            $set: { 
+                chatSound: chatSound,
+            }
+        };
         
+        return user.update(updates, function(err) {
+            if (err) return cb(err);
+            return cb(null, user);
+        });
+    });
+}
+
+UserSchema.statics.updateUserChatPosition = function(user, chatPosition) {
+    this.findOne({ email: user.email }, function(err, user) {
+        var updates = {
+            $set: { 
+                chatPosition: chatPosition,
+            }
+        };
+        
+        return user.update(updates, function(err) {
+            if (err) return cb(err);
+            return cb(null, user);
+        });
     });
 }
 

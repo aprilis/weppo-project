@@ -105,16 +105,7 @@ $(document).on('click', '#mute_chat_window', function(e) {
         sound: soundOn
     }
 
-    fetch('/updateUser/chatSound', {
-        method: 'post',
-        credentials: 'include',
-        body: JSON.stringify(data),
-        headers: new Headers({
-            'Content-Type': 'application/json'
-        })
-    }).then(res => res.json())
-    .catch(error => console.error('Error:', error))
-    .then(response => console.log('Success:', response));
+    postUpdateUser('/updateUser/chatSound', data);
 });
 
 var isDown = false;
@@ -126,15 +117,8 @@ $(document).on('mousedown', '#chat_window_1', function(e) {
     offsetX = offsetX - e.clientX;
 });
 
-$(document).on('mouseup', '', function() {
-    isDown = false;
-
-    // update here
-    var data = {
-        left: $("#chat_window_1").css("left")
-    }
-
-    fetch('/updateUser/chatPosition', {
+function postUpdateUser(url, data) {
+    fetch(url, {
         method: 'post',
         credentials: 'include',
         body: JSON.stringify(data),
@@ -144,6 +128,19 @@ $(document).on('mouseup', '', function() {
     }).then(res => res.json())
     .catch(error => console.error('Error:', error))
     .then(response => console.log('Success:', response));
+}
+
+$(document).on('mouseup', '', function() {
+    isDown = false;
+
+    leftValue = $("#chat_window_1").css("left")
+    leftValue = leftValue.substring(0, leftValue.length - 2);
+    // update here
+    var data = {
+        left: leftValue
+    }
+
+    postUpdateUser('/updateUser/chatPosition'. data);
 });
 
 $(document).on('mousemove', '', function(event) {

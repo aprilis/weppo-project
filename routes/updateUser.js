@@ -5,14 +5,13 @@ var express = require('express')
 const User = require('../models/Game');
 
 router.post('/chatSound', auth.IsAuthenticated, function(req, res){
-    console.log(req.body);
-    var sound = req.body.sound;
-    User.updateUser(req.user, "", "");
+    var chatSound = req.body.sound;
+    User.updateUserChatSound(req.user, chatSound);
 });
 
 router.post('/chatPosition', auth.IsAuthenticated, function(req, res) {
     var leftPosition = req.body.left;
-    User.updateUser(req.user, "", "");
+    User.updateUserChatPosition(req.user, leftPosition);
 });
 
 module.exports = router;
