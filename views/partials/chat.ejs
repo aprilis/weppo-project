@@ -97,8 +97,12 @@ $(document).on('click', '#mute_chat_window', function(e) {
 });
 
 var isDown = false;
+var offsetX = 0;
 $(document).on('mousedown', '#chat_window_1', function(e) {
     isDown = true;
+    offsetX = $('#chat_window_1').css("left");
+    offsetX = offsetX.substring(0, offsetX.length - 2);
+    offsetX = offsetX - e.clientX;
 });
 
 $(document).on('mouseup', '', function() {
@@ -111,7 +115,7 @@ $(document).on('mousemove', '', function(event) {
         mousePosition = {
             x : event.clientX,
         };
-        $("#chat_window_1").css("left", mousePosition.x + 'px');
+        $("#chat_window_1").css("left", (mousePosition.x + offsetX) + 'px');
     }
 });
 </script>
