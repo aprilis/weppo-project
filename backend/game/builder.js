@@ -10,7 +10,7 @@ const { copy } = require('../util/misc');
 const dataPath = 'data/builds';
 
 const defaultOptions = {
-    timeLimit : 100000
+    timeLimit : 20000
 };
 
 /*
@@ -80,7 +80,6 @@ function runCompiler(Sub, buildCommand, options) {
 }
 
 async function build( Sub, options ) {
-    console.log('building', Sub);
     Sub = copy(Sub);
     options = Object.assign({}, defaultOptions, options);
     const directory = getDataDirectory(Sub);

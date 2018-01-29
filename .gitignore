@@ -4,3 +4,4 @@ data
 .vscode
 public/gameScripts
 games
+config/mongo.js

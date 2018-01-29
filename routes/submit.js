@@ -5,6 +5,7 @@ var express = require('express')
 const languages = require('../config/languages');
 const { runGame } = require('../backend/game/runner');
 const { build } = require('../backend/game/builder');
+const ranking = require('../backend/ranking');
 
 const _ = require('underscore');
 const fs = require('fs-extra');
@@ -14,7 +15,6 @@ const upload = multer({ dest: 'data/code' });
 const Game = require('../models/Game');
 
 router.post('/quick-fight', auth.IsAuthenticated, upload.single('code'), (req, res) => {
-    console.log(req.file, req.body);
     (async function(params) {
         var bot1;
         try {
@@ -37,7 +37,6 @@ router.post('/quick-fight', auth.IsAuthenticated, upload.single('code'), (req, r
             return;
         }
 
-        //TODO
         const game = await Game.getGameByIDPromise(req.body.game);
         const bot2 = _(game.bots).find(b => b.id == req.body.opponent);
         console.log(game, bot2, game.args);
@@ -54,6 +53,49 @@ router.post('/quick-fight', auth.IsAuthenticated, upload.single('code'), (req, r
             stdin: stdin,
             stdout: stdout
         });
+    })().catch(e => {
+        console.error(e);
+        res.send({
+            success: false,
+            error: {
+                title: 'Internal Server Error',
+                message: e.toString()
+            }
+        });
+    });
+});
+
+router.post('/ranking', auth.IsAuthenticated, upload.single('code'), (req, res) => {
+    (async function(params) {
+        var bot = {
+            game: req.body.game,
+            user: req.user.userName,
+            code: req.file.path,
+            language: req.body.language
+        };
+        try {
+            const builded = await build({
+                type: 'bot',
+                codePath: bot.code,
+                username: bot.user,
+                gameID: bot.game,
+                language: req.body.language
+            });
+            Object.assign(bot, builded);
+            console.log(bot);
+        } catch(e) {
+            console.log(e);
+            res.send({
+                success: false,
+                error: {
+                    title: 'Compilation Error',
+                    message: e.toString()
+                }
+            });
+            return;
+        }
+        ranking.submit(bot).catch(console.error);
+        res.send({ success: true });
     })().catch(e => {
         console.error(e);
         res.send({

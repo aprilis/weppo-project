@@ -1,55 +1,39 @@
-var mongoose = require('mongoose')
+var mongoose = require('mongoose');
+const { EventEmitter } = require('events');
+const { queryToPromise } = require('./promise');
 
 var BattleSchema = mongoose.Schema({
-    id: {type: String},
-    game: {type: String},
-    bots: {type: [String]},
+    id: {type: String, required: true},
+    game: {type: String, required: true},
+    bots: {type: [String], required: true},
     results: {type: [Number]},
     history: {type: String},
     inputs: {type: [String]},
     outputs: {type: [String]}
 });
 
-GameSchema.statics.existsPromise = function (id, owner) {
-    return new Promise( 
-        (res, rej ) => {
-            this.findOne({gameID : id}, (err, game ) => {
-                if(err) rej(err);
-                if(!game) {
-                    res(false);
-                }
-                else if(game && game.owner != owner) res(true);
-                else {
-                    console.log("DELETING GAME ", id);
-                    this.deleteOne({gameID : id}, (err) => {
-                        if (err) rej(err);
-                        res(false);
-                    });
-                }
-        });
-    });
-};
+BattleSchema.statics.battlesOfBots = function(ids, game) {
+    return queryToPromise(this.find({
+        game: game,
+        bots: { $not: { $elemMatch: { $nin: ids }  } } 
+    }));
+}
 
-GameSchema.statics.getGameByIDPromise = function (id) {
-    return new Promise( (res, rej ) => {
-        this.findOne({gameID : id}, (err, game) => {
-            if (err) rej(err);
-            res(game);
-        });
-    });
-};
+BattleSchema.statics.battlesOfBot = function(id, others, game) {
+    return queryToPromise(this.find({
+        game: game,
+        bots: { $and: [
+            { $not: { $elemMatch: { $nin: others }  } } ,
+            { $elemMatch: id }
+        ]}
+    }));
+}
 
-GameSchema.statics.getAllPromise = function () {
-    return new Promise( 
-        (res, rej ) => {
-            this.find( {}, (err, games ) => {
-                if(err) rej(err);
-                res(games);
-        });
-    });
-};
+BattleSchema.statics.update = function(battle) {
+    Battle.events.emit('update', battle);
+    return queryToPromise(this.findOneAndUpdate({id: battle.id}, battle, { upsert: true }));
+}
 
-
-module.exports = mongoose.model('Game', GameSchema);
-
-
+const Battle = mongoose.model('Battle', BattleSchema);
+Battle.events = new EventEmitter();
+module.exports = Battle;
