@@ -77,7 +77,7 @@
             }
         });
 
-        if(dontAutoplay != true) {
+        if(window.dontAutoplay != true) {
             playAnimation();
         }
         updatePlayButton(viewer);
