@@ -111,12 +111,20 @@ router.post('/ranking', auth.IsAuthenticated, upload.single('code'), (req, res) 
 });
 
 router.get('/replay/:battleID', (req, res, next) => {
-    Battle.byID(req.params.battleID).then(battle => {
+    (async function() {
+        const battle = await Battle.byID(req.params.battleID);
+        const result = {
+            results: battle.results
+        };
         if(battle == null) {
-            next();
+            res.send(null);
+        } else {
+            result.history = await fs.readJson(battle.history);
+            result.stdin = await fs.readFile(battle.inputs[0], 'utf8');
+            result.stdout = await fs.readFile(battle.outputs[0], 'utf8');
+            res.send(result);
         }
-        res.send(battle);
-    }).catch(console.error);
+    })().catch(console.error);
 });
 
 module.exports = router;

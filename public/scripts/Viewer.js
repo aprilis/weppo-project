@@ -77,7 +77,9 @@
             }
         });
 
-        playAnimation();
+        if(!dontAutoplay) {
+            playAnimation();
+        }
         updatePlayButton(viewer);
     }
 
