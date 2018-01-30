@@ -10,6 +10,7 @@
     float:right;
     margin-left:10px;
     z-index:1000;
+    width: 350px;
 }
 .chat-window > div > .panel{
     border-radius: 5px 5px 0 0;
