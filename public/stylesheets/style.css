@@ -23,6 +23,7 @@ canvas {
 }
 
 .game-canvas-container {
+    background-color: #f5f5f5;
     border-color: #cacaca;
     border-style: solid;
     border-width: 3px;
