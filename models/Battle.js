@@ -12,6 +12,10 @@ var BattleSchema = mongoose.Schema({
     outputs: {type: [String]}
 });
 
+BattleSchema.statics.byID = function(id) {
+    return queryToPromise(this.findOne({ id: id }));
+}
+
 BattleSchema.statics.battlesOfBots = function(ids, game) {
     return queryToPromise(this.find({
         game: game,

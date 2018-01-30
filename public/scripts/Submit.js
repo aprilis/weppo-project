@@ -36,6 +36,11 @@ $('#submit-button').click(function() {
     data.append('game', gameID);
     data.append('code', codeEditorFile('editor'));
     data.append('language', codeEditorLanguage('editor'));
+    const url = new URL(document.URL);
+    const saveTo = url.searchParams.get('saveto');
+    if(saveTo) {
+        data.append('saveTo', saveTo);
+    }
     $(this).addClass('disabled');
 
     fetch('/submit/ranking', {

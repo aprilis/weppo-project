@@ -104,6 +104,10 @@ async function submit(bot) {
             const results = await runQueue.queueBattle(game, bots, {id: id});
             Object.assign(battle, results);
             await Battle.update(battle);
+            if(bot.saveTo) {
+                battle.id = bot.saveTo;
+                await Battle.update(battle);
+            }
             updateLeaderboard(bot.game).catch(console.error);
         });
     });

@@ -13,6 +13,7 @@ const multer = require('multer');
 const upload = multer({ dest: 'data/code' });
 
 const Game = require('../models/Game');
+const Battle = require('../models/Battle');
 
 router.post('/quick-fight', auth.IsAuthenticated, upload.single('code'), (req, res) => {
     (async function(params) {
@@ -71,7 +72,8 @@ router.post('/ranking', auth.IsAuthenticated, upload.single('code'), (req, res) 
             game: req.body.game,
             user: req.user.userName,
             code: req.file.path,
-            language: req.body.language
+            language: req.body.language,
+            saveTo: req.body.saveTo
         };
         try {
             const builded = await build({
@@ -106,6 +108,15 @@ router.post('/ranking', auth.IsAuthenticated, upload.single('code'), (req, res) 
             }
         });
     });
+});
+
+router.get('/replay/:battleID', (req, res, next) => {
+    Battle.byID(req.params.battleID).then(battle => {
+        if(battle == null) {
+            next();
+        }
+        res.send(battle);
+    }).catch(console.error);
 });
 
 module.exports = router;
