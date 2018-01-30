@@ -2,6 +2,15 @@
 <%- include('partials/auto-menu.ejs') %>
 <%- include('partials/alert.ejs') %>
 
+<h2>
+        <center>
+            <p class="text-primary">
+                Instructions
+            </p>
+        </center>
+</h2>
+
+<div class="well">
 <div id="intro">
             The idea of the platform is to create games that allow players to write bots that 
             read the game state description from standard input and print their moves to standard 
@@ -10,7 +19,9 @@
             You can find detailed information about uploading your bots and your own games below.
 
 </div>
+</div>
 
+<div class="well">
 <div id="bots">
     <h2>Uploading bots</h2>
     It is pretty straightforward. You just need to follow these steps:
@@ -23,7 +34,9 @@
         <li>Click the Fight button and wait for the results.</li>
     </ul>
 </div>
+</div>
 
+<div class="well">
 <div id="games">
     <h2>Uploading games</h2>
     That part is a little bit more complicated. To upload the game you need to give us:
@@ -93,7 +106,11 @@
 
     <h5><strong>Example</strong></h5>
     Below you can find the example of the game in the .zip archive. 
-    TODO : do sciagania archiwum
+    <form method="POST">
+            <button class="btn btn-primary">Example archive</button>
+        </form>
 </div>
+</div>
+
 
 <%- include('partials/end.ejs') %>

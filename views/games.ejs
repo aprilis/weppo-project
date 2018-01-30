@@ -3,16 +3,34 @@
 <%- include('partials/alert.ejs') %>
 
 <h2>
-    Please, choose game you want to compete in:
+        <center>
+            <p class="text-primary">
+                Play games !
+            </p>
+        </center>
 </h2>
 
+
+<h3> 
+    <p class="text-primary">
+        Choose game you want to compete in:
+    </p>
+</h3>
+
+
 <table class="table table-hover">
+<thead class="thead-inverse">
+    <tr>
+            <th> <h4><p class="text-muted">ID</p></h4></th>
+            <th> <h4><p class="text-muted">Title</p></h4></th>
+    </tr>
+</thead>
 <tbody>
 <% for (var game of games) { %>
 <tr>
     <td> <%= game.gameID %> </td>
     <td> <strong><%= game.name %> </strong> </td>
-    <td> <a href="/games/<%= game.gameID %>">Get in</a> </td>
+    <td> <a href="/games/<%= game.gameID %>"><button class="btn btn-primary">Get in</button></a> </td>
 </tr>
 <% } %>
 </tbody>
