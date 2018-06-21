@@ -30,7 +30,7 @@ BattleSchema.statics.battlesOfBot = function(id, others, game) {
             { $not: { $elemMatch: { $nin: others }  } } ,
             { $elemMatch: id }
         ]}
-    }));
+    }).sort('date'));
 }
 
 BattleSchema.statics.update = function(battle) {

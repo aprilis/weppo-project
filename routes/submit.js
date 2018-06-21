@@ -43,7 +43,7 @@ router.post('/quick-fight', auth.IsAuthenticated, upload.single('code'), (req, r
         console.log(game, bot2, game.args);
 
         const result = await runGame(game, [bot1, bot2]);
-        const [history, stdin, stdout, stderr] = await Promise.all([
+        const [history, stdin, stdout] = await Promise.all([
             fs.readJson(result.history),
             fs.readFile(result.inputs[0], 'utf8'),
             fs.readFile(result.outputs[0], 'utf8'),

@@ -18,43 +18,26 @@ function asyncForEach(array, func) {
 
 function computeLeaderboard(bots, battles) {
     const results = {};
-    bots.forEach(b => results[b.id] = {});
-    battles.forEach(b => {
+    bots.forEach(b => results[b.id] = 0);
+    var pointsSum = 0;
+    battles.forEach((b, i) => {
         if(b.results === undefined) {
             return;
         }
-        var [b1, b2] = b.bots;
-        var [r1, r2] = b.results;
-        [0, 0].forEach(() => {
-            var score;
-            if(r1 == 2) {
-                //win
-                score = 0;
-            } else if(r2 == 1) {
-                //draw
-                score = 0.5;
-            } else {
-                //lose
-                score = 1;
-            }
-            if(!results[b1][b2]) {
-                results[b1][b2] = [];
-            }
-            results[b1][b2].push(score);
-
-            [b1, b2] = [b2, b1];
-            [r1, r2] = [r2, r1];
+        const currentPoints = i + 1;
+        pointsSum += currentPoints;
+        const players = b.bots.length;
+        b.results.forEach((r, j) => {
+            results[b.bots[j]] += currentPoints * (players - r + 1) / players;
         });
     });
 
-    const avg = arr => arr.length ? arr.reduce((a, b) => a + b) / arr.length : 0;
     const points = bots.map(b => {
-        const res = results[b.id];
-        const average = _(res).mapObject(avg);
+        const res = results[b.id] / pointsSum;
         return {
             bot: b.id,
             user: b.user,
-            score: avg(_(average).values())
+            score: res
         };
     });
     return points.sort((a, b) => b.score - a.score);
@@ -84,6 +67,11 @@ async function submit(bot) {
     }
 
     await Bot.addBot(bot);
+}
+
+async function submitAndEval(bot) {
+    await submit(bot);
+    
     var bots = await Bot.rankingBotsForGame(bot.game);
     bots = _(bots).reject(b => b.id == bot.id);
     bots = pickRandom(bots, { count: Math.min(opponentsLimit, bots.length) });
@@ -114,5 +102,7 @@ async function submit(bot) {
 }
 
 module.exports = {
-    submit: submit
+    submit: submit,
+    submitAndEval: submitAndEval,
+    updateLeaderboard: updateLeaderboard
 };

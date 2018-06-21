@@ -94,7 +94,7 @@ function buildCode(code) {
         type: 'bot',
         codePath: code,
         username: 'mareklazniak',
-        gamename: 'tictactoe',
+        gameID: 'tictactoe',
         language: 'cpp'
     });
 }
