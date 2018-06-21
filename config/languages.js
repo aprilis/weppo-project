@@ -26,7 +26,7 @@ const config = {
     python: {
         name: 'Python 2',
         build: 'python -m py_compile {code} && mv {code}c {exec}',
-        run: 'python {exec}',
+        run: '/usr/bin/python {exec}',
         ext: 'py',
         editor: 'python'
     },
@@ -34,14 +34,14 @@ const config = {
     python3: {
         name: 'Python 3',
         build: 'python3 -c "import py_compile; py_compile.compile(\'{code}\', \'{exec}\')"',
-        run: 'python3 {exec}',
+        run: '/usr/bin/python3 {exec}',
         ext: 'py',
         editor: 'python'
     },
 
     node: {
         name: 'JavaScript (NodeJS)',
-        run: 'node {exec}',
+        run: '/usr/bin/node {exec}',
         ext: 'js',
         editor: 'javascript'
     }

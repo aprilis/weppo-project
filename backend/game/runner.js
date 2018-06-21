@@ -10,6 +10,7 @@ const promiseUtil = require('../util/promise');
 const dataPath = 'data/games';
 
 const defaultOptions = {
+    memoryLimit: 256,
     timeLimit: 1000,
     messageTimeLimit: 10000,
     seed: 0
@@ -85,7 +86,9 @@ async function runGame(game, bots, options) {
     });
 
     bots.forEach(b => {
-        b.process = childProcess.spawn(b.command, b.args);
+        var command = 'native/runner';
+        var args = [options.memoryLimit * (2 ** 20), b.command].concat(b.args);
+        b.process = childProcess.spawn(command, args);
         b.input = game.process.stdio[2 * b.nr + 3];
         b.output = b.process.stdout;
 
