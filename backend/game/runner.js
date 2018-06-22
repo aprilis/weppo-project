@@ -12,7 +12,7 @@ const dataPath = 'data/games';
 const defaultOptions = {
     memoryLimit: 256,
     timeLimit: 1000,
-    messageTimeLimit: 100000
+    messageTimeLimit: 10000
 };
 
 function getDataDirectory(id) {
