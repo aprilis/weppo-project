@@ -31,6 +31,10 @@
             viewer.find('.game-streams-viewer td[type="stdout"] pre').text(stdout[currentTurn] || '');
         }
 
+        function setFinalMessage(message) {
+            viewer.find('.game-streams-viewer .final-message').text(message || '');
+        }
+
         function setCurrentUpdate(update) {
             currentUpdate = update;
             const current = history.updates[currentUpdate];
@@ -49,7 +53,22 @@
         $(document).on('nextUpdate', () => {
             if(currentUpdate + 1 < history.updates.length) {
                 setCurrentUpdate(currentUpdate + 1);
+                setFinalMessage();
             } else {
+                var message;
+                if(history.results[0] == 1 && history.results[1] == 1) {
+                    message = 'Draw';
+                } else if(history.results[0] == 1) {
+                    message = 'You win';
+                } else {
+                    message = 'You lose';
+                    history.fails.forEach(fail => {
+                        if(fail.player == 0) {
+                            message += ' Reason:' + fail.reason;
+                        }
+                    });
+                }
+                setFinalMessage(message);
                 stopAnimation();
                 updatePlayButton(viewer);
             }
