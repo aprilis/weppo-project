@@ -52,7 +52,7 @@
 
     const socket = io('/league', {
         query: {
-            room: room
+            room: <%= game.gameID %>
         }
     });
     const rows = {};
