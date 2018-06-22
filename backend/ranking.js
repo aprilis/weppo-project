@@ -40,7 +40,7 @@ async function computeLeaderboard(battles) {
             if(results[u] === undefined) {
                 results[u] = 0;
             }
-            results[u] += currentPoints * (players - r + 1) / players;
+            results[u] += currentPoints * (players - r) / (players - 1);
         });
     });
 

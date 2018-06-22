@@ -23,7 +23,6 @@ async function runBattle(gameID, id) {
     try {
         const game = await Game.getGameByIDPromise(gameID);
         var bots = await Bot.rankingBotsForGame(gameID);
-        console.log(gameID, bots);
         if(bots.length <= 1) {
             broadcast(id, 'No bots', gameID);
             return;
@@ -34,11 +33,9 @@ async function runBattle(gameID, id) {
             game: gameID,
             bots: _(bots).pluck('id')
         };
-        console.log(battle);
         await Battle.create(battle);
         const results = await runQueue.queueBattle(game, bots, {id: id});
         Object.assign(battle, results);
-        console.log('with results', battle);
         await Battle.update(battle);
         ranking.updateLeaderboard(gameID).catch(console.error);
         broadcast(id, 'Finished', gameID);
