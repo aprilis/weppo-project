@@ -50,10 +50,20 @@
         initAnimation(history);
 
         if(faces) {
+            console.log(game.users, history.results);
             const faceElem = viewer.find('.faces');
             const colors = getColors();
-            game.users.forEach((user, i) => {
-                faceElem.append('<img src="/mordy/' + user + '.jpg" style="outline-color: ' + colors[i] + '"></img>');
+            const users = game.users.map((user, i) => {
+                return {
+                    name: user,
+                    color: colors[i],
+                    place: history.results[i]
+                }
+            });
+            users.sort((a, b) => a.place - b.place);
+            users.forEach((user) => {
+                faceElem.append('<img src="/mordy/' + user.name + 
+                '.jpg" style="outline-color: ' + user.color + '"></img>');
             });
         }
 
