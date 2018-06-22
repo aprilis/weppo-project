@@ -64,7 +64,7 @@
                     message = 'You lose';
                     history.fails.forEach(fail => {
                         if(fail.player == 0) {
-                            message += ' Reason:' + fail.reason;
+                            message += ', reason: ' + fail.reason;
                         }
                     });
                 }
