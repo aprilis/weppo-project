@@ -10,7 +10,8 @@ function initLiveRanking(room, userName) {
         leaderboard.forEach((entry, i) => {
             const score = Math.round(entry.score * 10000) / 100;
             table.append('<tr><td>' + (i + 1) + '</td><td>' +
-                 entry.user + '</td><td>' + score + '</td></tr>');
+                 '<img src="/mordy/' + entry.user + '.jpg"></img> '
+                  + entry.user + '</td><td>' + score + '</td></tr>');
         });
     });
 }
