@@ -28,6 +28,8 @@ async function runBattle(gameID, id) {
             return;
         }
         bots = _.shuffle(bots);
+        while(bots.size() > 6)
+            bots.pop();
         const battle = {
             id: id,
             game: gameID,
