@@ -1,5 +1,8 @@
 <div class="game-viewer" id="<%= id %>">
     <div class="game-canvas">
+        <% if(locals.faces) { %>
+        <div class="col-md-12 faces"></div>
+        <% } %>
         <div class="col-md-12 game-canvas-container">
             <canvas width="<%= canvasWidth %>" height="<%= canvasHeight %>"></canvas>
         </div>
