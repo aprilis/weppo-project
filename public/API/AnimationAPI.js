@@ -8,7 +8,7 @@ var animationData = {
 }
 
 function setCanvasSelector(selector) {
-    animationData.canvasSelector(selector);
+    animationData.canvasSelector = selector;
 }
 
 function getCanvas() {

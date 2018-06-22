@@ -19,6 +19,7 @@ $('#quick-fight-button').click(function() {
     .then(response => response.json())
     .then(response => {
         if(response.success) {
+            console.log(response);
             viewGame('viewer', response);
         } else {
             showModal(response.error.title, response.error.message);

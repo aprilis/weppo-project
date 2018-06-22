@@ -13,30 +13,41 @@ const battles = 3;
 
 function asyncForEach(array, func) {
     const now = new Promise((res, rej) => res());
-    return Promise.all(array.map(elem => func(elem)).concat(now));
+    return Promise.all(array.map((elem, i) => func(elem, i)).concat(now));
 }
 
-function computeLeaderboard(bots, battles) {
+async function computeLeaderboard(battles) {
     const results = {};
-    bots.forEach(b => results[b.id] = 0);
+    const user = {};
+
+    async function getUser(bot) {
+        if(user[bot] === undefined) {
+            user[bot] = (await Bot.botByID(bot)).user;
+        }
+        return user[bot];
+    }
+
     var pointsSum = 0;
-    battles.forEach((b, i) => {
+    await asyncForEach(battles, async function(b, i) {
         if(b.results === undefined) {
             return;
         }
         const currentPoints = i + 1;
         pointsSum += currentPoints;
         const players = b.bots.length;
-        b.results.forEach((r, j) => {
-            results[b.bots[j]] += currentPoints * (players - r + 1) / players;
+        await asyncForEach(b.results, async function(r, j) {
+            const u = await getUser(b.bots[j]);
+            if(results[u] === undefined) {
+                results[u] = 0;
+            }
+            results[u] += currentPoints * (players - r + 1) / players;
         });
     });
 
-    const points = bots.map(b => {
-        const res = results[b.id] / pointsSum;
+    const points = _(results).pairs().map(([u, r]) => {
+        const res = r / pointsSum;
         return {
-            bot: b.id,
-            user: b.user,
+            user: u,
             score: res
         };
     });
@@ -45,11 +56,9 @@ function computeLeaderboard(bots, battles) {
 
 async function updateLeaderboard(game) {
     const leaderboard = await Leaderboard.byGameID(game);
-    const bots = await Bot.rankingBotsForGame(game);
-    const battles = await Battle.battlesOfBots(_(bots).pluck('id'), game);
-    const results = computeLeaderboard(bots, battles);
+    const battles = await Battle.battles(game);
+    const results = await computeLeaderboard(battles);
     await Leaderboard.update(game, results);
-    console.log(results);
     return results;
 }
 
@@ -88,7 +97,7 @@ async function submitAndEval(bot) {
                 bots: _(bots).pluck('id')
             };
 
-            await new Battle(battle).save();
+            await Battle.create(battle);
             const results = await runQueue.queueBattle(game, bots, {id: id});
             Object.assign(battle, results);
             await Battle.update(battle);

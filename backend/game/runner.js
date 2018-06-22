@@ -12,8 +12,7 @@ const dataPath = 'data/games';
 const defaultOptions = {
     memoryLimit: 256,
     timeLimit: 1000,
-    messageTimeLimit: 10000,
-    seed: 0
+    messageTimeLimit: 10000
 };
 
 function getDataDirectory(id) {
@@ -54,6 +53,9 @@ async function runGame(game, bots, options) {
     game = _.clone(game);
     bots = bots.map(_.clone);
     options = _(options || {}).defaults(defaultOptions, { id: uniqid() });
+    if(options.seed === undefined) {
+        options.seed = _.random(1000000000);
+    }
 
     bots.forEach((b, i) => b.nr = i);
 

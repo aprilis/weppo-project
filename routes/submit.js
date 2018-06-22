@@ -40,7 +40,6 @@ router.post('/quick-fight', auth.IsAuthenticated, upload.single('code'), (req, r
 
         const game = await Game.getGameByIDPromise(req.body.game);
         const bot2 = _(game.bots).find(b => b.id == req.body.opponent);
-        console.log(game, bot2, game.args);
 
         const result = await runGame(game, [bot1, bot2]);
         const [history, stdin, stdout] = await Promise.all([

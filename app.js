@@ -52,7 +52,8 @@ var routes = require('./routes/index')
     , submit = require('./routes/submit')
     , instructions = require('./routes/instructions')
     , updateUser = require('./routes/updateUser')
-    , about = require('./routes/about');
+    , about = require('./routes/about')
+    , league = require('./routes/league');
 
 // Routes
 app.use(express.static(path.join(__dirname, 'public')));
@@ -68,6 +69,7 @@ app.use('/submit', submit);
 app.use('/instructions', instructions);
 app.use('/updateUser', updateUser);
 app.use('/about', about);
+app.use('/league', league);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

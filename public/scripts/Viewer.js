@@ -19,8 +19,8 @@
 
     viewGame = function(viewerId, game) {
         var { history, stdin, stdout } = game;
-        stdin = splitStreamLog(stdin);
-        stdout = splitStreamLog(stdout);
+        stdin = splitStreamLog(stdin || '');
+        stdout = splitStreamLog(stdout || '');
         const viewer = $('#' + viewerId);
         const turns = history.updates[history.updates.length-1].turn;
         var currentUpdate;
@@ -38,7 +38,10 @@
             drawFrame(current);
         }
 
-        resetViewer(viewer);
+        $('.game-viewer').each(function() {
+            resetViewer($(this));
+        });
+        setCanvasSelector('#' + viewerId + ' canvas');
         initAnimation(history);
 
         stopAnimation();

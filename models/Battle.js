@@ -20,7 +20,7 @@ BattleSchema.statics.battlesOfBots = function(ids, game) {
     return queryToPromise(this.find({
         game: game,
         bots: { $not: { $elemMatch: { $nin: ids }  } } 
-    }));
+    }).sort('time'));
 }
 
 BattleSchema.statics.battlesOfBot = function(id, others, game) {
@@ -30,12 +30,23 @@ BattleSchema.statics.battlesOfBot = function(id, others, game) {
             { $not: { $elemMatch: { $nin: others }  } } ,
             { $elemMatch: id }
         ]}
-    }).sort('date'));
+    }).sort('time'));
+}
+
+BattleSchema.statics.battles = function(game) {
+    return queryToPromise(this.find({
+        game: game
+    }).sort('time'));
 }
 
 BattleSchema.statics.update = function(battle) {
     Battle.events.emit('update', battle);
     return queryToPromise(this.findOneAndUpdate({id: battle.id}, battle, { upsert: true }));
+}
+
+BattleSchema.statics.create = function(battle) {
+    battle.time = new Date().getTime();
+    return new Battle(battle).save();
 }
 
 const Battle = mongoose.model('Battle', BattleSchema);

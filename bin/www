@@ -61,6 +61,9 @@ chat.initialize(io);
 const liveRanking = require('../backend/liveRanking');
 liveRanking.initialize(io.of('/ranking'));
 
+const league = require('../backend/league');
+league.initialize(io.of('/league'));
+
 function onAuthorizeSuccess(data, accept) {
   // This method make sure that the socket is authorized by passport!
   console.log('successful connection to socket.io (authorized by passport)');

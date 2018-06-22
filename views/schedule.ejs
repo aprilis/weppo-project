@@ -1,0 +1,115 @@
+<%- include('partials/head.ejs', { title: 'Schedule battles for ' + game.name }) %>
+<%- include('partials/auto-menu.ejs') %>
+<%- include('partials/alert.ejs') %>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<h2>
+    <center>
+        <p class="text-primary">
+            Schedule battles for <%= game.name %>
+        </p>
+    </center>
+</h2>
+
+<div class="row" style="height: 20px"></div>
+<div class="row">
+    <div class="col-md-3">
+        <h5 class="text-right"> Minimum interval (seconds): <h5>
+    </div>
+    <div class="col-md-2">
+        <input type="number" id="interval" step="5" value="60">
+    </div>
+    <div class="col-md-1">
+        <button class="btn btn-primary" id="start-button">Start</button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="pre-scrollable">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Result</th>
+                    </th>
+                </thead>
+                    <tbody id="battles">
+                    </tbody>
+                </div>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showModal(title, message) {
+        $('#modal-error .modal-title').text(title);
+            $('#modal-error .modal-body').text(message);
+            $('#modal-error').modal();
+    }
+
+    const socket = io('/league', {
+        query: {
+            room: room
+        }
+    });
+    const rows = {};
+    var interval = null;
+
+    socket.on('update', (id, result) => {
+        setTimeout(() => {
+            const element = rows[id];
+            if(element) {
+                element.find(':last-child').text(result);
+            }
+        }, 100);
+    });
+
+    function two(n) {
+        return n < 10 ? '0' + n : n;
+    }
+
+    function addRow(id) {
+        const date = new Date();
+        const time = date.getHours() + ':' + two(date.getMinutes()) + ':' + two(date.getSeconds());
+        const row = $('<tr><td>' + time + '</td><td>Pending</td></tr>');
+        rows[id] = row;
+        $('#battles').append(row);
+    }
+
+    function sendRequest() {
+        fetch('/league/next-battle/' + '<%= game.gameID %>', {
+            credentials: 'include'
+        })
+            .then(response => response.json())
+            .then(response => {
+                if(response.success) {
+                    addRow(response.id);
+                } else {
+                    showModal(response.error.title, response.error.message);
+                }
+            })
+            .catch(e => {
+                console.error(e);
+                showModal('Unexpected error', e.message);
+            });
+    }
+
+    const button = $('#start-button');
+    button.click(() => {
+        if(interval) {
+            clearInterval(interval);
+            interval = null;
+            button.text('Start');
+        } else {
+            const seconds = $('#interval').val();
+            interval = setInterval(sendRequest, seconds * 1000);
+            button.text('Stop');
+            sendRequest();
+        }
+    });
+</script>
+
+<%- include('partials/end.ejs') %>
