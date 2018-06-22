@@ -8,8 +8,9 @@ const uniqid = require('uniqid');
 const _ = require('underscore');
 const fs = require('fs-extra');
 
-var Game = require('../models/Game');
+const Game = require('../models/Game');
 const Battle = require('../models/Battle');
+const Bot = require('../models/Bot');
 
 router.get('/schedule/:gameId', auth.IsAuthenticated, function(req, res, next) {
     Game.getGameByIDPromise(req.params.gameId)
@@ -62,11 +63,14 @@ router.get('/battle/:battleId', auth.IsAuthenticated, (req, res) => {
             fs.readFile(result.inputs[0], 'utf8'),
             fs.readFile(result.outputs[0], 'utf8'),
         ]);
+        const bots = await Promise.all(result.bots.map(id => Bot.botByID(id)));
+        const users = _(bots).pluck('user');
         res.send({
             success: true,
             history: history,
             stdin: stdin,
-            stdout: stdout
+            stdout: stdout,
+            users: users
         });
     })().catch(e => {
         console.error(e);

@@ -1,6 +1,7 @@
 (function() {
 
     function resetViewer(viewer) {
+        viewer.find('.faces img').remove();
         viewer.find('.game-navigator *').removeClass('disabled').off('click');
         updatePlayButton(viewer);
     }
@@ -17,7 +18,7 @@
         return [''].concat(stream.split('END\n'));
     }
 
-    viewGame = function(viewerId, game) {
+    viewGame = function(viewerId, game, faces) {
         var { history, stdin, stdout } = game;
         stdin = splitStreamLog(stdin || '');
         stdout = splitStreamLog(stdout || '');
@@ -47,6 +48,14 @@
         });
         setCanvasSelector('#' + viewerId + ' canvas');
         initAnimation(history);
+
+        if(faces) {
+            const faceElem = viewer.find('.faces');
+            const colors = getColors();
+            game.users.forEach((user, i) => {
+                faceElem.append('<img src="/mordy/' + user + '.jpg" style="outline-color: ' + colors[i] + '"></img>');
+            });
+        }
 
         stopAnimation();
         $(document).off('nextUpdate');

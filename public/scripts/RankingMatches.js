@@ -27,7 +27,7 @@ function initRankingMatches(room, userName) {
                 .then(response => {
                     if(response.success) {
                         console.log(response);
-                        viewGame('ranking-viewer', response);
+                        viewGame('ranking-viewer', response, true);
                     } else {
                         showModal(response.error.title, response.error.message);
                     }
